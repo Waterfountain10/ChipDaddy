@@ -5,10 +5,6 @@
 #include "chip8.h"
 
 namespace chip {
-    class Chip8 {
-    public:
+    Chip8::
 
-    private:
-
-    };
 } // chip
