@@ -5,5 +5,6 @@
 #include "chip8.h"
 
 namespace Chip8 {
+    //Chip8::
 
 } // Chip8
