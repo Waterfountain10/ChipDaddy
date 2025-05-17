@@ -10,8 +10,6 @@ add_executable(chip_8_emulator main.cpp
 
 find_package(SDL2 REQUIRED)
 
-if (SDL2_FOUND)
-    target_link_libraries(chip_8_emulator PUBLIC SDL2::SDL2)
-else ()
-    message(FATAL_ERROR "SDL2 Not Found")
-endif ()
+target_link_libraries(chip_8_emulator PRIVATE SDL2::SDL2) # links all libraries to our chip-8 app
+target_include_directories(chip_8_emulator PRIVATE ${SDL2_INCLUDE_DIRS}) # tells CLion where the headers are
+
