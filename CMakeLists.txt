@@ -6,9 +6,19 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(chip_8_emulator main.cpp
         src/hardware/chip8.h
         src/hardware/chip8.cpp
+        src/instructions/instructions.cpp
+        src/instructions/instructions.h
+        src/program.cpp
 )
 
 find_package(SDL2 REQUIRED)
 
-target_link_libraries(chip_8_emulator PRIVATE SDL2::SDL2) # links all libraries to our chip-8 app
-target_include_directories(chip_8_emulator PRIVATE ${SDL2_INCLUDE_DIRS}) # tells CLion where the headers are
+target_link_libraries(chip_8_emulator
+        PRIVATE
+        SDL2::SDL2
+        SDL2::SDL2main
+) # links all libraries to our chip-8 app
+target_include_directories(chip_8_emulator
+        PRIVATE
+        ${SDL2_INCLUDE_DIRS}
+) # tells CLion where the headers are)

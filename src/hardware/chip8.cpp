@@ -4,7 +4,6 @@
 
 #include "chip8.h"
 
-namespace chip {
-    Chip8::
+namespace Chip8 {
 
-} // chip
+} // Chip8
