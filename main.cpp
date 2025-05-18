@@ -26,21 +26,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // If Running on terminal like: ./chip_8_emulator <rom-file>
-    std::string terminal_exec_arg = "./chip_8_emulator";
-    std::string actual_exec_arg = argv[0];
-    int result = terminal_exec_arg.compare(actual_exec_arg);
-    if (result == 0) { //
-        try {
-            if (argc > 1) {
-                std::cout << "-------------------------------------------------------" << std::endl;
-                std::cout << std::format("Running {} with inputted <ROM_file>:", argv[0]) << std::endl;
-                std::cout << argv[1] << std::endl;
-                std::cout << "-------------------------------------------------------" << std::endl;
-            }
-            else if (argc == 3) {
-                if (!std::isdigit(*argv[2])) { // not a digit for the ipf parameter -> Error
-
     // default values (if not running CLI)
     std::string rom_path;
     int ipf;
