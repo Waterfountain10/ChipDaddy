@@ -4,9 +4,20 @@
 #include <SDL2/SDL_image.h>
 #include<SDL2/SDL_timer.h>
 #include "src/hardware/chip8.h"
+#include <boost/type_index.hpp>
+#include <type_traits>
 
 
 using namespace Chip8;
+
+template<typename T>
+bool checkType(const T& value) {
+    if constexpr (std::is_same_v<T, int>) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +34,7 @@ int main(int argc, char *argv[])
     // default values (if not running CLI)
     std::string rom_path;
     int ipf;
+    //boost::typeindex:: ipf_type;
 
     // Example: ./chip-8-emulator <rom_path> <ipf>
     try {
@@ -31,21 +43,24 @@ int main(int argc, char *argv[])
             case 3: // CLI mode
                 rom_path = argv[1];
                 rom_file.open(rom_path, std::ios::binary | std::ios::ate);
+                ipf = std::stoi(argv[2]);
+                //ipf_type = boost::typeindex::type_id_with_cvr<decltype(ipf)>().pretty_name();
+                //using boost::typeindex::type_id_with_cvr;
+                //std::cout << ipf_type << std::endl;
 
-                if (!std::isdigit(argv[2][0]))
-                    throw std::runtime_error("<ipf> must be a digit");
-                if (int(argv[2][0]) < 1 || int(argv[2][0] > 20))
-                    throw std::runtime_error("<ipf> must be a digit between 1 and 20 inclusively");
+
                 if (!rom_file.is_open())
                     throw std::runtime_error("<rom_path> file could not be opened.");
                 if (rom_file.tellg() > 4096)
                     throw std::runtime_error("<rom_path> file size is too big for Chip-8 rom");
                 if (rom_file.tellg() < 0)
                     throw std::runtime_error("<rom_path> file size is negative");
+                if (!checkType(ipf))
+                    throw std::runtime_error("<ipf> must be a digit");
+                if (ipf < 1 || ipf > 20)
+                    throw std::runtime_error("<ipf> must be a digit between 1 and 20 inclusively");
 
                 // both arguments passed the edge cases
-                ipf = int(argv[2][0]);
-                rom_path = argv[1];
                 break;
 
             case 1: // GUI mode
