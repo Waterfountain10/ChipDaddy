@@ -11,7 +11,7 @@ namespace Chip8 {
     class Chip8 {
     public:
         std::vector<uint8_t> registers; //uint8_t registers[16];
-        std::vector<uint8_t> memory;//uint8_t memory[4096];
+        std::vector<uint8_t> memory; //uint8_t memory[4096];
         uint16_t index_reg;
         uint16_t program_ctr;
         std::vector<uint16_t> stack; //uint16_t stack[16];
