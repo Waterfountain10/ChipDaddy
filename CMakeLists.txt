@@ -12,6 +12,8 @@ add_executable(chip_8_emulator main.cpp
         src/program.cpp
         src/Platform.cpp
         src/Platform.h
+        src/GUI/GUI.cpp
+        src/GUI/GUI.h
 )
 
 find_package(SDL2 REQUIRED)
