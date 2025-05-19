@@ -4,11 +4,18 @@
 
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
+#include <cstdint>
 
-class Instructions {
-    static void interpret_opcode(void) {
+namespace Chip8 {
+    class Instructions {
+        enum class OpCode {
 
-    }
-};
+        };
+
+        static int interpret_opcode(uint16_t opcode) {
+
+        }
+    };
+}
 
 #endif //INSTRUCTIONS_H

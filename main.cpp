@@ -8,6 +8,8 @@
 #include <boost/type_index.hpp>
 #include <type_traits>
 
+#include "src/Platform.h"
+
 #include "src/GUI/GUI.h"
 
 using namespace Chip8;
@@ -81,8 +83,27 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    SDL_Window* win = SDL_CreateWindow("GAME",
+                                       SDL_WINDOWPOS_CENTERED,
+                                       SDL_WINDOWPOS_CENTERED,
+                                       1000, 1000,
+                                       SDL_WINDOW_SHOWN);
+    if (!win) {
+        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
+    std::shared_ptr<Platform> chip8_platform = std::make_shared<Platform>();
+
+    bool running = true;
+
+    while (running) {
+        chip8_platform->read_input();
+    }
+
+    SDL_DestroyWindow(win);
+    SDL_Quit();
     // START THE GAME
     GUI::GUI("GAME",1000,1000, false);
     return 0;
-
 }
