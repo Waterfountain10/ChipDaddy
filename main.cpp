@@ -64,8 +64,7 @@ int main(int argc, char *argv[])
                 int demo_h = 457;
 
                 GUI::GUI("SELECT_YOUR_ROM",621,457, true);
-
-
+                // this waits until we close the window
                 break;
             }
             default: {
@@ -99,10 +98,12 @@ int main(int argc, char *argv[])
 
     while (running) {
         chip8_platform->read_input();
+        // std::cout << "Reading input\n" << std::endl;
     }
 
     SDL_DestroyWindow(win);
     SDL_Quit();
+
     // START THE GAME
     GUI::GUI("GAME",1000,1000, false);
     return 0;

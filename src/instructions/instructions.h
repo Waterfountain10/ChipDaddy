@@ -13,8 +13,8 @@ namespace Chip8 {
         };
 
         static int interpret_opcode(uint16_t opcode) {
-
-        }
+            return 0;
+        };
     };
 }
 

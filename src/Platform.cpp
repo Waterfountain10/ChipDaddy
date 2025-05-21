@@ -5,6 +5,8 @@
 #include "Platform.h"
 
 #include <algorithm>
+#include <format>
+#include <iostream>
 #include <memory>
 #include <map>
 #include <set>
@@ -15,7 +17,14 @@ namespace Chip8 {
     Platform::Platform(void) :
     sdl_subsystems(std::make_shared<std::vector<uint32_t>>()),
     key_states(std::make_shared<std::set<uint8_t>>()),
-    key_mapping(std::make_shared<std::map<uint8_t, uint8_t>>()) // initialize list
+    key_mapping(std::make_shared<std::map<uint8_t, uint8_t>>(
+        std::initializer_list<std::pair<const uint8_t,uint8_t>>{
+            {  '1', 0x1 }, {  '2', 0x2 }, {  '3', 0x3 }, {  '4', 0xC },
+            { 'q', 0x4 }, { 'w', 0x5 }, { 'e', 0x6 }, { 'r', 0xD },
+            { 'a', 0x7 }, { 's', 0x8 }, { 'd', 0x9 }, { 'f', 0xE },
+            { 'z', 0xA }, { 'x', 0x0 }, { 'c', 0xB }, { 'v', 0xF }
+        }
+    )) // initialize list and kep mappings
     {
         initialize_sdl();
     }
@@ -48,10 +57,12 @@ namespace Chip8 {
             switch (this->curr_key_input_event.type) {
                 case SDL_KEYDOWN:
                     // Turn the Key on
+                    std::cout << std::format("{}", static_cast<int>(this->curr_key_input_event.key.keysym.scancode)) << std::endl;
                     this->add_key_state(this->curr_key_input_event.key.keysym);
                     break;
                 case SDL_KEYUP:
                     // If key is off then take the key off
+                    std::cout << std::format("{}", static_cast<int>(this->curr_key_input_event.key.keysym.scancode)) << std::endl;
                     this->remove_key_state(this->curr_key_input_event.key.keysym);
                     break;
 
