@@ -4,8 +4,6 @@
 
 #include "instructions.h"
 
-namespace Chip8{
-    enum OpCode {
+namespace Instructions {
 
-    };
 } // Chip8

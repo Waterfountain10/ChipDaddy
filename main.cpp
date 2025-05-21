@@ -12,8 +12,6 @@
 
 #include "src/GUI/GUI.h"
 
-using namespace Chip8;
-
 template<typename T>
 bool __checkType(const T& value) {
     if constexpr (std::is_same_v<T, int>) {
@@ -92,13 +90,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::shared_ptr<Platform> chip8_platform = std::make_shared<Platform>();
+    std::shared_ptr<Chip8::Chip8> chip8_hardware = std::make_shared<Chip8::Chip8>();
+    std::shared_ptr<Chip8::Platform> chip8_platform = std::make_shared<Chip8::Platform>(chip8_hardware);
 
     bool running = true;
 
     while (running) {
         chip8_platform->read_input();
-        // std::cout << "Reading input\n" << std::endl;
     }
 
     SDL_DestroyWindow(win);
