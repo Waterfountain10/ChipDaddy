@@ -11,15 +11,15 @@ namespace GUI {
 
 class GUI {
     public:
-        SDL_Window* win;
         GUI(std::string name, int width, int height, bool is_demo); // constructor
         ~GUI();
 
         bool input_rom_path(std::string rom_path);
 
     private:
-        // nothing for now
-    };
+        SDL_Window* win = nullptr;
+        SDL_Surface* image_surface;
+};
 }
 
 #endif //GUI_H

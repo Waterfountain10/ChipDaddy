@@ -29,7 +29,7 @@ namespace Chip8 {
         int init_timers(uint8_t delay_time, uint8_t sound_time);
 
     private:
-        const std::unique_ptr<std::array<>>
+        //const std::unique_ptr<std::array<>>
     };
 } // Chip8
 
