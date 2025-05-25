@@ -30,15 +30,15 @@ int main(int argc, char *argv[])
 
     // default values
     std::string rom_path;
+    std::ifstream rom_file;
     int ipf;
 
     try {
-        std::ifstream rom_file;
         switch (argc) {
             case 3: {
                 // CLI mode
                 rom_path = argv[1];
-                rom_file.open(rom_path, std::ios::binary | std::ios::ate);
+                rom_file.open(rom_path, std::ios::in | std::ios::binary | std::ios::ate);  // pointing seeker at end
                 ipf = std::stoi(argv[2]);
 
                 if (!rom_file.is_open())
@@ -95,12 +95,17 @@ int main(int argc, char *argv[])
     // Load the fonts in memory
     chip8_hardware->load_fonts_in_memory();
 
+    // File validation already done prior
+    if (chip8_hardware->load_rom(&rom_file) != 0) {
+        std::cout << std::format("The file {} did not load into emulator properly.\n", rom_path) << std::endl;
+        return -1;
+    }
+    rom_file.close();   // Closes the file after loading
+
     bool running = true;
     while (running) {
         chip8_platform->read_input();
-        break; // for now since read_input() is not implemented yet
     }
-
 
     // START THE GAME
     std::cout << "game started..." << std::endl;

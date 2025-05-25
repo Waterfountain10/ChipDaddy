@@ -72,6 +72,7 @@ namespace Chip8 {
                     // Turn the Key on
                     this->add_key_state(this->curr_key_input_event.key.keysym);
                     break;
+
                 case SDL_KEYUP:
                     // If key is off then take the key off
                     this->remove_key_state(this->curr_key_input_event.key.keysym);

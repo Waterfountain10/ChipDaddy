@@ -13,6 +13,8 @@
 namespace Chip8 {
     class Chip8 {
     public:
+        static const uint16_t rom_start_addr = 0x200;
+
         const std::unique_ptr<std::array<uint8_t, 16>> registers;  //uint8_t registers[16];
         const std::unique_ptr<std::array<uint8_t, 4096>> memory;     //uint8_t memory[4096];
         const std::unique_ptr<std::array<uint16_t, 16>> stack;     //uint16_t stack[16];
@@ -25,10 +27,15 @@ namespace Chip8 {
         const std::shared_ptr<std::array<uint8_t, 64 * 32>> gfx; //uint8_t gfx[64 * 32];
         std::array<uint8_t, 80> fonts;
 
+        // Do not reference platform with shared_ptr
+
         explicit Chip8();
         int init_counters();
         int init_timers(uint8_t delay_time, uint8_t sound_time);
         bool load_fonts_in_memory(std::string start_address = "050");
+        // ~Chip8();
+
+        int load_rom(std::ifstream *file_stream);
 
     private:
         //const std::unique_ptr<std::array<>>

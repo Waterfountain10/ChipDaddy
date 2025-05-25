@@ -32,6 +32,7 @@ public:
     int read_input();
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
+    // ~Platform();
 };
 
 } // Chip8

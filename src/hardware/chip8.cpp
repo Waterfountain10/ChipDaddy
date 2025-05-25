@@ -4,6 +4,8 @@
 
 #include "chip8.h"
 #include <iostream>
+#include <fstream>
+#include <format>
 #include <memory>
 #include <sstream>
 
@@ -48,6 +50,23 @@ namespace Chip8 {
     int Chip8::init_timers(uint8_t delay_time = 0, uint8_t sound_time = 0) {
         this->delay_timer = delay_time;
         this->sound_timer = sound_time;
+
+        return 0;
+    }
+
+    int Chip8::load_rom(std::ifstream *file_stream) {
+        std::streamsize file_size = file_stream->tellg();
+        std::vector<char> buffer(file_size);
+
+        file_stream->seekg(0, std::ios::beg);
+        if (!file_stream->read(buffer.data(), file_size))
+            throw std::runtime_error("Read failed");
+
+        std::copy(
+            buffer.begin(),
+            buffer.end(),
+            memory->begin() + rom_start_addr
+        );
 
         return 0;
     }
