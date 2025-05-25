@@ -768,7 +768,10 @@
     <inspection_tool class="CppDFALocalValueEscapesFunction" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFALocalValueEscapesScope" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFALoopConditionNotUpdated" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="CppDFAMemoryLeak" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFAMemoryLeak" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES">
+      <option name="allocatingFunctions" value="malloc;calloc;realloc;SDL_malloc;SDL_calloc;SDL_realloc;new;new[];SDL_CreateWindow;SDL_CreateRenderer;SDL_LoadBMP;SDL_GetWindowSurface;SDL_CreateTextureFromSurface;SDL_CreateRGBSurface;SDL_CreateRGBSurfaceFrom;SDL_AllocFormat;SDL_AllocPalette" />
+      <option name="deallocatingFunctions" value="free;SDL_free;delete;delete[];SDL_DestroyWindow;SDL_DestroyRenderer;SDL_FreeSurface;SDL_DestroyTexture;SDL_FreeFormat;SDL_FreePalette" />
+    </inspection_tool>
     <inspection_tool class="CppDFANotInitializedField" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFANullDereference" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFATimeOver" enabled="false" level="HINT" enabled_by_default="false" />
@@ -1017,7 +1020,6 @@
     <inspection_tool class="CustomRegExpInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CustomSecurityManager" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CyclicClassDependency" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="CyclicJobDependency" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="CyclicPackageDependency" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CyclomaticComplexity" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="m_limit" value="10" />
@@ -1339,7 +1341,6 @@
     <inspection_tool class="GherkinBrokenTableInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="GherkinMisplacedBackground" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="GherkinScenarioToScenarioOutline" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="GithubFunctionSignatureValidation" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="GrAnnotationReferencingUnknownIdentifiers" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="GrDeprecatedAPIUsage" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="GrEqualsBetweenInconvertibleTypes" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -1629,7 +1630,6 @@
     <inspection_tool class="IgnoredJUnitTest" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IllegalDependencyOnInternalPackage" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="IllegalIdentifier" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="IllegalJobDependency" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="ImplicitArrayToString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ImplicitCallToSuper" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="m_ignoreForObjectSubclasses" value="false" />
@@ -2016,7 +2016,6 @@
     <inspection_tool class="MalformedSetUpTearDown" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MalformedXPath" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MaliciousLibrariesLocal" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="MandatoryParamsAbsent" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="ManualArrayCopy" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ManualArrayToCollectionCopy" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ManualMinMaxCalculation" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -3176,9 +3175,7 @@
     <inspection_tool class="UnconditionalWait" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UnconstructableTestCase" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UndeclaredTests" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="UndefinedAction" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UndefinedJob" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="UndefinedParamsPresent" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UndefinedStage" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="UndesirableClassUsage" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnknownGuard" enabled="false" level="WARNING" enabled_by_default="false" />

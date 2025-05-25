@@ -9,7 +9,6 @@ add_executable(chip_8_emulator main.cpp
         src/hardware/chip8.cpp
         src/instructions/instructions.cpp
         src/instructions/instructions.h
-        src/program.cpp
         src/Platform.cpp
         src/Platform.h
         src/GUI/GUI.cpp

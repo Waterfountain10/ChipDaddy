@@ -92,16 +92,15 @@ int main(int argc, char *argv[])
     std::shared_ptr<Chip8::Chip8> chip8_hardware = std::make_shared<Chip8::Chip8>(); // DONT FORGET TO ADD WEAK_PTRS
     std::shared_ptr<Chip8::Platform> chip8_platform = std::make_shared<Chip8::Platform>(chip8_hardware);
 
+    // Load the fonts in memory
+    chip8_hardware->load_fonts_in_memory();
+
     bool running = true;
-
-
     while (running) {
         chip8_platform->read_input();
         break; // for now since read_input() is not implemented yet
     }
 
-    // SDL_DestroyWindow(win);
-    // SDL_Quit();
 
     // START THE GAME
     std::cout << "game started..." << std::endl;
@@ -115,7 +114,6 @@ int main(int argc, char *argv[])
         }
     }
     std::cout << "...game ended" << std::endl;
-
 
     SDL_Quit(); // End of all SDL subsystems
     return 0;

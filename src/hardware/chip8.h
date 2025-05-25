@@ -23,10 +23,12 @@ namespace Chip8 {
         uint8_t delay_timer;
         uint8_t sound_timer;
         const std::shared_ptr<std::array<uint8_t, 64 * 32>> gfx; //uint8_t gfx[64 * 32];
+        std::array<uint8_t, 80> fonts;
 
         explicit Chip8();
         int init_counters();
         int init_timers(uint8_t delay_time, uint8_t sound_time);
+        bool load_fonts_in_memory(std::string start_address = "050");
 
     private:
         //const std::unique_ptr<std::array<>>
