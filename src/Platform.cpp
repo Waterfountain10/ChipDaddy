@@ -15,10 +15,10 @@
 
 namespace Chip8 {
     Platform::Platform(std::shared_ptr<Chip8> chip8_instance) :  // initialize list and kep mappings
-    sdl_subsystems_(std::make_shared<std::vector<uint32_t>>()),
-    key_states(std::make_shared<std::set<uint8_t>>()),
+    sdl_subsystems_(std::make_unique<std::vector<uint32_t>>()),
+    key_states(std::make_unique<std::set<uint8_t>>()),
     key_mapping(
-        std::make_shared<std::map<uint8_t, uint8_t>>(
+        std::make_unique<std::map<uint8_t, uint8_t>>(
             std::initializer_list<std::pair<const uint8_t,uint8_t>>{
                 {  '1', 0x1 }, {  '2', 0x2 }, {  '3', 0x3 }, {  '4', 0xC },
                 { 'q', 0x4 }, { 'w', 0x5 }, { 'e', 0x6 }, { 'r', 0xD },
@@ -46,13 +46,12 @@ namespace Chip8 {
 
     int Platform::add_subsystem(uint32_t subsystem_code)
     {
-        std::shared_ptr<std::vector<uint32_t>> subsystems = this->sdl_subsystems_;
         if (std::find(
-            subsystems->begin(),
-            subsystems->end(),
+            sdl_subsystems_->begin(),
+            sdl_subsystems_->end(),
             subsystem_code
-            ) != subsystems->end()) {    // If code is not already in subsystems
-            subsystems->push_back(subsystem_code);
+            ) != sdl_subsystems_->end()) {    // If code is not already in subsystems
+            sdl_subsystems_->push_back(subsystem_code);
             return 0;
         }
         return 1;

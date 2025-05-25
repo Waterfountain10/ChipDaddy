@@ -11,7 +11,7 @@ namespace Chip8 {
     }
 
     int Instructions::set_opcode(uint16_t opcode) {
-
+        return 0;
     }
 
     int Instructions::interpret_opcode(uint16_t opcode) {   // static

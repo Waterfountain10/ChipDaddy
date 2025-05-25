@@ -18,11 +18,11 @@ namespace Chip8 {
 class Platform {
 public:
     SDL_Event curr_key_input_event;
-    const std::shared_ptr<std::vector<uint32_t>> sdl_subsystems_ ;    // smart_ptr to vector of subsys
+    const std::unique_ptr<std::vector<uint32_t>> sdl_subsystems_ ;    // smart_ptr to vector of subsys
 
-    const std::shared_ptr<std::set<uint8_t>> key_states;            // state of keys
+    const std::unique_ptr<std::set<uint8_t>> key_states;            // state of keys
     const uint8_t key_input_range = 15;                             // 0 - 15 or 0x0 to 0xF
-    const std::shared_ptr<std::map<uint8_t, uint8_t>> key_mapping;
+    const std::unique_ptr<std::map<uint8_t, uint8_t>> key_mapping;
 
     const std::shared_ptr<Chip8> chip8_;                      // actual hardware
 

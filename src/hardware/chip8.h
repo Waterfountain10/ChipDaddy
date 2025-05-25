@@ -38,7 +38,7 @@ namespace Chip8 {
         int load_rom(std::ifstream *file_stream);
 
     private:
-        //const std::unique_ptr<std::array<>>
+        // Nothing here
     };
 } // Chip8
 
