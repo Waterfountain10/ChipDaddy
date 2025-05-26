@@ -5,10 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(chip_8_emulator main.cpp
-        src/hardware/chip8.h
-        src/hardware/chip8.cpp
-        src/instructions/instructions.cpp
-        src/instructions/instructions.h
+        src/hardware/chip.h
+        src/hardware/chip.cpp
+        src/hardware/instructions.cpp
+        src/hardware/instructions.h
         src/Platform.cpp
         src/Platform.h
         src/GUI/GUI.cpp

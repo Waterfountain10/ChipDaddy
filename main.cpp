@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
-#include "src/hardware/chip8.h"
+#include "src/hardware/chip.h"
 #include <boost/type_index.hpp>
 #include <type_traits>
 
@@ -89,17 +89,15 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    // dependency injection
-    std::shared_ptr<Chip8::Chip8> chip8_hardware = std::make_shared<Chip8::Chip8>(); // DONT FORGET TO ADD WEAK_PTRS
+    // Prepare the hardware and gui layer -> dependency injection into platform layer
+    std::shared_ptr<Chip8::Chip> chip8_hardware = std::make_shared<Chip8::Chip>(); // DONT FORGET TO ADD WEAK_PTRS
     std::shared_ptr<GUI::GUI> game_gui = std::make_shared<GUI::GUI>("GAME",1000,1000, false);
-    std::unique_ptr<Chip8::Platform> chip8_platform = std::make_unique<Chip8::Platform>(chip8_hardware, game_gui);
-
-    // Load the fonts in memory
-    chip8_hardware->load_fonts_in_memory();
+    std::unique_ptr<Chip8::Platform> chip8_platform =
+        std::make_unique<Chip8::Platform>(chip8_hardware, game_gui);
 
     // File validation already done prior
     if (chip8_hardware->load_rom(&rom_file) != 0) {
-        std::cout << std::format("The file {} did not load into emulator properly.\n", rom_path) << std::endl;
+        std::cout << std::format("The file {} did not load properly.\n", rom_path) << std::endl;
         return -1;
     }
     rom_file.close();   // Closes the file after loading
@@ -108,7 +106,7 @@ int main(int argc, char *argv[])
     std::cout << "game started...\n" << std::endl;
 
     bool running = true;
-    while (running) {
+    while (running && chip8_platform->check_valid()) {
         chip8_platform->read_input();
     }
 

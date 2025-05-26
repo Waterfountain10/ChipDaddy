@@ -2,7 +2,7 @@
 // Created by albert on 5/16/25.
 //
 
-#include "chip8.h"
+#include "chip.h"
 #include <iostream>
 #include <fstream>
 #include <format>
@@ -11,7 +11,7 @@
 
 // This is all the implementation for the chip-8 hardware
 namespace Chip8 {
-    Chip8::Chip8() :    // initialize list
+    Chip::Chip() :    // initialize list
     registers(std::make_unique<std::array<uint8_t, 16>>()),
     memory(std::make_unique<std::array<uint8_t, 4096>>()),
     stack(std::make_unique<std::array<uint16_t, 16>>()),
@@ -35,26 +35,28 @@ namespace Chip8 {
         0xF0, 0x80, 0xF0, 0x80, 0x80, // F
     }}
     {
-        this->init_counters();
-        this->init_timers(0, 0);    // use default argument values 0, 0
+        init_counters();
+        init_timers(0, 0);    // use default argument values 0, 0
+
+        load_fonts_in_memory();
     }
 
-    int Chip8::init_counters() {
-        this->index_reg = 0x000; // also known as I  (used to store memory addresses)
-        this->program_ctr = 0x000;
-        this->stack_ptr = 0x000;    // init to final memory addr
+    int Chip::init_counters() {
+        this->index_reg = 0x000; // aka i (stores memory address by rom)
+        this->program_ctr = 0x200; // program line counter
+        this->stack_ptr = 0x000; // stack address pointer
 
         return 0;
     }
 
-    int Chip8::init_timers(uint8_t delay_time = 0, uint8_t sound_time = 0) {
+    int Chip::init_timers(uint8_t delay_time = 0, uint8_t sound_time = 0) {
         this->delay_timer = delay_time;
         this->sound_timer = sound_time;
 
         return 0;
     }
 
-    int Chip8::load_rom(std::ifstream *file_stream) {
+    int Chip::load_rom(std::ifstream *file_stream) {
         std::streamsize file_size = file_stream->tellg();
         std::vector<char> buffer(file_size);
 
@@ -67,11 +69,12 @@ namespace Chip8 {
             buffer.end(),
             memory->begin() + rom_start_addr
         );
+        set_rom_loaded(true);
 
         return 0;
     }
 
-    bool Chip8::load_fonts_in_memory(std::string start_address_hex) {
+    bool Chip::load_fonts_in_memory(std::string start_address_hex) {
         // Stores 5 bytes * 16 fonts = 80 bytes inside [0x050, 0x09F]
         int start_address_int;
         std::stringstream ss;
@@ -87,8 +90,20 @@ namespace Chip8 {
         return true;
     }
 
-    int cycle() {
-        // TODO
+    bool Chip::get_rom_loaded() {
+        return rom_loaded;
+    }
+
+
+    void Chip::set_rom_loaded(bool status) {
+        rom_loaded = status;
+    }
+
+
+    int Chip::cycle() {
+        program_ctr += 2;
+
+        // TODO: Add relevant cycle operations on hardware
 
         return 0;
     }

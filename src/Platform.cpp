@@ -14,7 +14,8 @@
 #include "SDL.h"
 
 namespace Chip8 {
-    Platform::Platform(std::shared_ptr<Chip8> chip8_instance, std::shared_ptr<GUI::GUI> gui_instance) :  // initialize list and kep mappings
+    Platform::Platform(std::shared_ptr<Chip8::Chip> chip8_instance, std::shared_ptr<GUI::GUI>
+    gui_instance) :  // initialize list and kep mappings
     sdl_subsystems_(std::make_unique<std::vector<uint32_t>>()),
     key_states(std::make_unique<std::set<uint8_t>>()),
     key_mapping(
@@ -27,8 +28,8 @@ namespace Chip8 {
             }
         )
     ),
-    chip8_{ std::move(chip8_instance) },
-    gui_ { std::move(gui_instance) }
+    chip8_{ chip8_instance },
+    gui_ { gui_instance }
     {
         if (!chip8_) {
             std::cerr << "Invalid instantiation of Platform Layer" << std::endl;
@@ -105,5 +106,13 @@ namespace Chip8 {
         uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
         return key_states->erase(key);
     }
+
+    bool Platform::check_valid() {
+        if (!chip8_->get_rom_loaded()) return false;
+
+        return true;
+    }
+
+
 
 } // Chip8
