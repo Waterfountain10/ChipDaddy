@@ -49,7 +49,6 @@ GUI::GUI(std::string name, int width, int height, bool is_intro) {
 
 }
 
-
 // DESTRUCTOR
 GUI::~GUI() {
     if (image_surface) {

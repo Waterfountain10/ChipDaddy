@@ -11,6 +11,7 @@
 #include <map>
 #include <SDL_events.h>
 
+#include "GUI/GUI.h"
 #include "hardware/chip8.h"
 
 namespace Chip8 {
@@ -25,8 +26,9 @@ public:
     const std::unique_ptr<std::map<uint8_t, uint8_t>> key_mapping;
 
     const std::shared_ptr<Chip8> chip8_;                      // actual hardware
+    const std::shared_ptr<GUI::GUI> gui_;                     // gui layer
 
-    explicit Platform(std::shared_ptr<Chip8> chip8_instance);         // constructor
+    explicit Platform(std::shared_ptr<Chip8> chip8_instance, std::shared_ptr<GUI::GUI> gui_instance);         // constructor
     int init_sdl();
     int add_subsystem(uint32_t subsystem_code);
     int read_input();

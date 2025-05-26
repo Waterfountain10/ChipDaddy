@@ -20,9 +20,9 @@ cmake-build-*/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-cmake-build-debug/*
-cmake-build-release/*
-cmake-build-relwithdebinfo/*
+
+# IDE-related files
+*cmake-build*/
 
 # Packaging-related files
 *.tar.gz

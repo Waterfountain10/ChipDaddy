@@ -86,4 +86,10 @@ namespace Chip8 {
         }
         return true;
     }
+
+    int cycle() {
+        // TODO
+
+        return 0;
+    }
 }

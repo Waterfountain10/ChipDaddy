@@ -89,8 +89,10 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    // dependency injection
     std::shared_ptr<Chip8::Chip8> chip8_hardware = std::make_shared<Chip8::Chip8>(); // DONT FORGET TO ADD WEAK_PTRS
-    std::shared_ptr<Chip8::Platform> chip8_platform = std::make_shared<Chip8::Platform>(chip8_hardware);
+    std::shared_ptr<GUI::GUI> game_gui = std::make_shared<GUI::GUI>("GAME",1000,1000, false);
+    std::unique_ptr<Chip8::Platform> chip8_platform = std::make_unique<Chip8::Platform>(chip8_hardware, game_gui);
 
     // Load the fonts in memory
     chip8_hardware->load_fonts_in_memory();
@@ -102,23 +104,15 @@ int main(int argc, char *argv[])
     }
     rom_file.close();   // Closes the file after loading
 
+    // START THE GAME
+    std::cout << "game started...\n" << std::endl;
+
     bool running = true;
     while (running) {
         chip8_platform->read_input();
     }
 
-    // START THE GAME
-    std::cout << "game started..." << std::endl;
-    std::unique_ptr<GUI::GUI> game_gui = std::make_unique<GUI::GUI>("GAME",1000,1000, false);
-    SDL_Event e;
-    bool game_quit = false;
-    while (!game_quit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT)
-                game_quit = true;
-        }
-    }
-    std::cout << "...game ended" << std::endl;
+    std::cout << "...game ended\n" << std::endl;
 
     SDL_Quit(); // End of all SDL subsystems
     return 0;

@@ -30,12 +30,14 @@ namespace Chip8 {
         // Do not reference platform with shared_ptr
 
         explicit Chip8();
+        ~Chip8() = default;
         int init_counters();
         int init_timers(uint8_t delay_time, uint8_t sound_time);
         bool load_fonts_in_memory(std::string start_address = "050");
-        // ~Chip8();
 
         int load_rom(std::ifstream *file_stream);
+
+        int cycle();    // main loop
 
     private:
         // Nothing here
