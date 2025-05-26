@@ -14,7 +14,7 @@
 #include "SDL.h"
 
 namespace Chip8 {
-    Platform::Platform(std::shared_ptr<Chip8::Chip> chip8_instance, std::shared_ptr<GUI::GUI>
+    Platform::Platform(std::shared_ptr<Chip8::Chip> chip8_instance, std::shared_ptr<Gui>
     gui_instance) :  // initialize list and kep mappings
     sdl_subsystems_(std::make_unique<std::vector<uint32_t>>()),
     key_states(std::make_unique<std::set<uint8_t>>()),

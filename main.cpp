@@ -10,7 +10,7 @@
 
 #include "src/Platform.h"
 
-#include "src/GUI/GUI.h"
+#include "src/gui/gui.h"
 
 template<typename T>
 bool __checkType(const T& value) {
@@ -54,14 +54,16 @@ int main(int argc, char *argv[])
                 break;
             }
             case 1: {
-                // GUI mode
+                // gui mode
                 rom_path = "placeholder_text"; // REMOVE LATER
                 ipf = 10; // placeholder ipf   // REMOVE LATER
 
                 int demo_w = 621;
                 int demo_h = 457;
 
-                std::unique_ptr<GUI::GUI> intro_gui = std::make_unique<GUI::GUI>("SELECT_YOUR_ROM",621,457, true);
+                std::unique_ptr<Chip8::Gui> intro_gui = std::make_unique<Chip8::Gui>
+                ("SELECT_YOUR_ROM",621,
+                457, true);
 
                 // intro SDL display loop
                 SDL_Event e;
@@ -91,7 +93,7 @@ int main(int argc, char *argv[])
 
     // Prepare the hardware and gui layer -> dependency injection into platform layer
     std::shared_ptr<Chip8::Chip> chip8_hardware = std::make_shared<Chip8::Chip>(); // DONT FORGET TO ADD WEAK_PTRS
-    std::shared_ptr<GUI::GUI> game_gui = std::make_shared<GUI::GUI>("GAME",1000,1000, false);
+    std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",1000,1000, false);
     std::unique_ptr<Chip8::Platform> chip8_platform =
         std::make_unique<Chip8::Platform>(chip8_hardware, game_gui);
 

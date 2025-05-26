@@ -7,12 +7,12 @@
 #include <SDL_video.h>
 #include <string>
 
-namespace GUI {
+namespace Chip8 {
 
-class GUI {
+class Gui {
     public:
-        GUI(std::string name, int width, int height, bool is_demo); // constructor
-        ~GUI();
+        Gui(std::string name, int width, int height, bool is_demo); // constructor
+        ~Gui();
 
         bool input_rom_path(std::string rom_path);
 
@@ -20,6 +20,7 @@ class GUI {
         SDL_Window* win = nullptr;
         SDL_Surface* image_surface;
 };
-}
 
-#endif //GUI_H
+} // Chip8
+
+#endif //gui_h
