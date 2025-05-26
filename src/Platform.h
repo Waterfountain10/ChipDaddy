@@ -5,6 +5,7 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <chrono>
 #include <memory>
 #include <vector>
 #include <set>
@@ -29,8 +30,8 @@ public:
     const std::shared_ptr<Gui> gui_; // gui layer
 
     explicit Platform(std::shared_ptr<Chip> chip8_instance, std::shared_ptr<Gui>
-    gui_instance);
-    ~Platform() = default;
+    gui_instance, unsigned ipf);
+    ~Platform();
     int init_sdl();
     int add_subsystem(uint32_t subsystem_code);
     int read_input();
@@ -40,6 +41,14 @@ public:
     int create_window_layer(); // TODO
 
     bool check_valid();
+
+    void run_frame();
+
+private:
+    unsigned ipf_;
+    const unsigned cycle_hz = 60;
+    std::chrono::microseconds cycle_period;
+    std::chrono::microseconds last_cycle_time;
 };
 
 } // Chip8

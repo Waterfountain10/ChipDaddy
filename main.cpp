@@ -95,7 +95,13 @@ int main(int argc, char *argv[])
     std::shared_ptr<Chip8::Chip> chip8_hardware = std::make_shared<Chip8::Chip>(); // DONT FORGET TO ADD WEAK_PTRS
     std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",1000,1000, false);
     std::unique_ptr<Chip8::Platform> chip8_platform =
-        std::make_unique<Chip8::Platform>(chip8_hardware, game_gui);
+        std::make_unique<Chip8::Platform>(chip8_hardware, game_gui, ipf);
+
+    // Initialize platform layer
+    chip8_platform->add_subsystem(SDL_INIT_VIDEO);
+    chip8_platform->add_subsystem(SDL_INIT_EVENTS);
+
+    chip8_platform->init_sdl();
 
     // File validation already done prior
     if (chip8_hardware->load_rom(&rom_file) != 0) {
@@ -109,11 +115,11 @@ int main(int argc, char *argv[])
 
     bool running = true;
     while (running && chip8_platform->check_valid()) {
-        chip8_platform->read_input();
+        chip8_platform->run_frame();
     }
 
     std::cout << "...game ended\n" << std::endl;
 
-    SDL_Quit(); // End of all SDL subsystems
+    chip8_platform->~Platform(); // End of all SDL subsystems + destruct layer
     return 0;
 }

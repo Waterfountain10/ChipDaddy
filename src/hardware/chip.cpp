@@ -33,11 +33,10 @@ namespace Chip8 {
         0xE0, 0x90, 0x90, 0x90, 0xE0, // D
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80, // F
-    }}
+    }}  // DI from this
     {
         init_counters();
         init_timers(0, 0);    // use default argument values 0, 0
-
         load_fonts_in_memory();
     }
 
@@ -54,6 +53,10 @@ namespace Chip8 {
         this->sound_timer = sound_time;
 
         return 0;
+    }
+
+    void Chip::init_instr_dispatcher() {
+        instr_dispatcher = std::make_shared<Instructions>(shared_from_this());
     }
 
     int Chip::load_rom(std::ifstream *file_stream) {
@@ -99,12 +102,32 @@ namespace Chip8 {
         rom_loaded = status;
     }
 
+    int Chip::decrement_timers() {
+        if (delay_timer < 0 || sound_timer < 0) return -1;
+        if (delay_timer > 0) delay_timer--;
+        if (sound_timer > 0) sound_timer--;
+        return 0;
+    }
+
 
     int Chip::cycle() {
+        // validation
+        if (program_ctr + 1 >= memory->size()) {
+            std::cout << "Resetting program_ctr" << std::endl;
+            program_ctr = rom_start_addr;
+            // throw std::out_of_range("PCOutOfBoundsException: Crashed Program\n");
+        }
+
+        // fetch two bytes
+        uint8_t high = memory->at(program_ctr);
+        uint8_t low  = memory->at(program_ctr + 1);
+
+        // execute
+        uint16_t opcode = ((uint16_t) high << 8) | low; // combine two byte using bitwise
+        instr_dispatcher->interpret_opcode(opcode);
+
+        // move relevant counters and timers
         program_ctr += 2;
-
-        // TODO: Add relevant cycle operations on hardware
-
         return 0;
     }
 }

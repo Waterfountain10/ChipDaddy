@@ -6,6 +6,7 @@
 #define INSTRUCTIONS_H
 #include <array>
 #include <cstdint>
+#include <iostream>
 
 #include "chip.h"
 
@@ -93,6 +94,8 @@ namespace Chip8 {
         void OP_FX33(std::shared_ptr<Chip8::Chip> chip8_ptr);
         void OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr);
         void OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr);
+
+        void OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr);
     };
 }
 

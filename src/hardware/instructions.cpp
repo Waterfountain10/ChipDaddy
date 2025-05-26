@@ -12,7 +12,8 @@ namespace Chip8 {
         init_dispatch_table();
     }
 
-    int Instructions::interpret_opcode(uint16_t p_opcode) {   // static
+    int Instructions::interpret_opcode(uint16_t p_opcode) {
+        // static
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
@@ -24,12 +25,15 @@ namespace Chip8 {
     }
 
     // private
-    void Instructions::init_dispatch_table() {
+    void Instructions::init_dispatch_table() {  // TODO: Potential optimization -> Make Hash Map
+    // for quick access instead
         zero_dispatch_table = std::array<Handler, ZERO_OPS>{};
+        zero_dispatch_table.fill(&Instructions::OP_NULL);
         zero_dispatch_table[0x0] = &Instructions::OP_00E0;
         zero_dispatch_table[0xE] = &Instructions::OP_00EE;
 
         eight_dispatch_table = std::array<Handler, EIGHT_OPS>{};
+        eight_dispatch_table.fill(&Instructions::OP_NULL);
         eight_dispatch_table[0x0] = &Instructions::OP_8XY0;
         eight_dispatch_table[0x1] = &Instructions::OP_8XY1;
         eight_dispatch_table[0x2] = &Instructions::OP_8XY2;
@@ -41,10 +45,12 @@ namespace Chip8 {
         eight_dispatch_table[0xE] = &Instructions::OP_8XYE;
 
         e_dispatch_table = std::array<Handler, E_OPS>{};
+        e_dispatch_table.fill(&Instructions::OP_NULL);
         e_dispatch_table[0x1] = &Instructions::OP_EXA1;
         e_dispatch_table[0xE] = &Instructions::OP_EX9E;
 
         f_dispatch_table = std::array<Handler, F_OPS>{};
+        f_dispatch_table.fill(&Instructions::OP_NULL);
         f_dispatch_table[0x07] = &Instructions::OP_FX07;
         f_dispatch_table[0x0A] = &Instructions::OP_FX0A;
         f_dispatch_table[0x15] = &Instructions::OP_FX15;
@@ -200,5 +206,10 @@ namespace Chip8 {
     };
     void Instructions::OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
+    };
+
+    void Instructions::OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        std::cout << "Performed null operation" << std::endl;
+        return;
     };
 } // Chip8

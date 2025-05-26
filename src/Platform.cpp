@@ -11,11 +11,13 @@
 #include <map>
 #include <set>
 #include <SDL.h>
+#include <thread>
+
 #include "SDL.h"
 
 namespace Chip8 {
     Platform::Platform(std::shared_ptr<Chip8::Chip> chip8_instance, std::shared_ptr<Gui>
-    gui_instance) :  // initialize list and kep mappings
+    gui_instance, unsigned ipf) :  // initialize list and kep mappings
     sdl_subsystems_(std::make_unique<std::vector<uint32_t>>()),
     key_states(std::make_unique<std::set<uint8_t>>()),
     key_mapping(
@@ -32,10 +34,24 @@ namespace Chip8 {
     gui_ { gui_instance }
     {
         if (!chip8_) {
-            std::cerr << "Invalid instantiation of Platform Layer" << std::endl;
+            std::cerr << "Platform: Invalid instantiation of Platform Layer\n" << std::endl;
             return;
         }
-        this->init_sdl();
+        if (ipf < 0) {
+            std::cerr << "Platform: Invalid IPF (Instructions Per Frame) value\n" << std::endl;
+            return;
+        }
+        chip8_->init_instr_dispatcher();
+        ipf_ = ipf;
+        cycle_period = std::chrono::microseconds{1'000'000 / cycle_hz};     // calc cycle time
+    }
+
+    Platform::~Platform() {
+        for (uint32_t subsystem : *(this->sdl_subsystems_)) {
+            SDL_QuitSubSystem(subsystem);
+        }
+        SDL_Quit();
+        // TODO: Call any cleanup function from the hardware and gui layer
     }
 
     int Platform::init_sdl(void)
@@ -113,6 +129,29 @@ namespace Chip8 {
         return true;
     }
 
+    void Platform::run_frame() {
+        std::chrono::time_point frame_start_time = std::chrono::steady_clock::now();
+        int cycles_to_run = ipf_;
 
+        // Run instructions per frame as specified;
+        for (int i = 0; i < ipf_; ++i) {
+            read_input();
+            chip8_->cycle();
+        }
+        // TODO: Update the platform screen after every frame ends
+        // TODO: Plays sound using SDL if sound_timer > 0
+        chip8_->decrement_timers();
+
+        // Compute remaining time
+        std::chrono::time_point<std::chrono::steady_clock> frame_end_time = std::chrono::steady_clock::now();
+        std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>
+        (frame_end_time - frame_start_time);
+        std::chrono::microseconds time_to_wait = cycle_period - elapsed;
+
+        // Sleep until time is up
+        if (time_to_wait > std::chrono::microseconds::zero()) {
+            std::this_thread::sleep_for(time_to_wait);
+        }
+    }
 
 } // Chip8

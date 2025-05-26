@@ -16,7 +16,7 @@ namespace Chip8 {
 
     class Instructions; // avoid circular declarations
 
-    class Chip {
+    class Chip : public std::enable_shared_from_this<Chip> {
     public:
         static const uint16_t rom_start_addr = 0x200;
 
@@ -33,11 +33,13 @@ namespace Chip8 {
         ~Chip() = default;
         int init_counters();
         int init_timers(uint8_t delay_time, uint8_t sound_time);
+        void init_instr_dispatcher();
+
         bool load_fonts_in_memory(std::string start_address = "050");
-
         bool get_rom_loaded();
-
         int load_rom(std::ifstream *file_stream);
+
+        int decrement_timers();
 
         int cycle();    // main loop
 
