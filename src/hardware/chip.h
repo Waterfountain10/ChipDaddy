@@ -29,6 +29,13 @@ namespace Chip8 {
         std::shared_ptr<Instructions> instr_dispatcher; // lifetime is managed by the hardware
         // Do not reference platform as it is abstraction layer
 
+        // TODO: Whether to make these dynamic using stdlib
+        uint16_t index_reg;
+        uint16_t program_ctr;
+        uint8_t stack_ptr;
+        uint8_t delay_timer;
+        uint8_t sound_timer;
+
         explicit Chip();
         ~Chip() = default;
         int init_counters();
@@ -45,13 +52,6 @@ namespace Chip8 {
 
     private:
         bool rom_loaded = false;
-
-        // TODO: Whether to make these dynamic using stdlib
-        uint16_t index_reg;
-        uint16_t program_ctr;
-        uint8_t stack_ptr;
-        uint8_t delay_timer;
-        uint8_t sound_timer;
 
         void set_rom_loaded(bool status);
     };

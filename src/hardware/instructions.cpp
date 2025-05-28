@@ -84,83 +84,113 @@ namespace Chip8 {
     void Instructions::OP_0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         (this->*zero_dispatch_table[(opcode & 0x000Fu)])(chip8_ptr);     // masks last bit and executes
     }
+
     void Instructions::OP_00E0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
-    void Instructions::OP_00EE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+    }
 
-    };
+    void Instructions::OP_00EE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        chip8_ptr->stack_ptr--;
+        chip8_ptr->program_ctr = chip8_ptr->stack->at(chip8_ptr->stack_ptr);
+    }
 
     void Instructions::OP_1NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint16_t addr = opcode & 0x0FFF;
+        chip8_ptr->program_ctr = addr;
+    }
 
-    };
     void Instructions::OP_2NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        chip8_ptr->stack->at(chip8_ptr->stack_ptr) = 1;
+        chip8_ptr->stack_ptr++;
 
-    };
+        uint16_t addr = opcode & 0x0FFFu;
+        chip8_ptr->program_ctr = addr;
+    }
+
     void Instructions::OP_3XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
-    void Instructions::OP_4XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+    }
 
-    };
+    void Instructions::OP_4XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8u;     // Masks third digit then shifts to keep
+        uint8_t byte = (opcode & 0x00FFu);    // Masks bottom 8-bits
+
+        if (chip8_ptr->registers->at(reg) != byte) {
+            chip8_ptr->program_ctr += 2;
+        }
+    }
+
     void Instructions::OP_5XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
-    void Instructions::OP_6XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+    }
 
-    };
+    void Instructions::OP_6XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8u;
+        uint8_t byte = opcode & 0x00FFu;
+
+        chip8_ptr->registers->at(reg) = byte;
+    }
+
     void Instructions::OP_7XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_8(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         (this->*eight_dispatch_table[(opcode & 0x000Fu)])(chip8_ptr);    // masks last bit and
         // executes
     }
+
     void Instructions::OP_8XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_8XY1(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_8XY2(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_8XY3(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
     void Instructions::OP_8XY4(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
     void Instructions::OP_8XY5(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
     void Instructions::OP_8XY6(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
     void Instructions::OP_8XY7(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
     void Instructions::OP_8XYE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_9XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_ANNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint16_t addr = opcode & 0x0FFFu;
+        chip8_ptr->index_reg = addr;
+    }
 
-    };
     void Instructions::OP_BNNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_CXNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_DXYN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         (this->*e_dispatch_table[(opcode & 0x000Fu)])(chip8_ptr);
@@ -168,11 +198,11 @@ namespace Chip8 {
 
     void Instructions::OP_EX9E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_EXA1(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     // F-Ops
     void Instructions::OP_F(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -181,35 +211,53 @@ namespace Chip8 {
     }
 
     void Instructions::OP_FX07(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8u;
+        uint8_t v = chip8_ptr->delay_timer;
 
-    };
+        chip8_ptr->registers->at(reg) = v;
+    }
+
     void Instructions::OP_FX0A(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_FX15(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8u;
+        uint8_t v = chip8_ptr->registers->at(reg);
 
-    };
+        chip8_ptr->delay_timer = v;
+    }
+
     void Instructions::OP_FX18(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8u;
+        uint8_t v = chip8_ptr->registers->at(reg);
 
-    };
+        chip8_ptr->sound_timer = v;
+    }
+
     void Instructions::OP_FX1E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_FX29(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
+
     void Instructions::OP_FX33(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
-    void Instructions::OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+    }
 
-    };
+    void Instructions::OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        
+    }
+
     void Instructions::OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
-    };
+    }
 
     void Instructions::OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         std::cout << "Performed null operation" << std::endl;
         return;
-    };
+    }
+    
 } // Chip8
