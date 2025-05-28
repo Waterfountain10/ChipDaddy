@@ -4,6 +4,8 @@
 
 #include "instructions.h"
 
+#include <chrono>
+
 namespace Chip8 {
     // public
     Instructions::Instructions(std::shared_ptr<Chip> chip8_instance) :
@@ -145,7 +147,14 @@ namespace Chip8 {
     }
 
     void Instructions::OP_8XY1(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        uint8_t c = static_cast<uint8_t>(value_x | value_y);    // OR operator
+        chip8_ptr->registers->at(reg_x) = c;
     }
 
     void Instructions::OP_8XY2(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -248,7 +257,15 @@ namespace Chip8 {
     }
 
     void Instructions::OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        
+        uint8_t last_reg = (opcode & 0x0F00u) >> 8u;
+
+        std::array<uint8_t, 16>::iterator reg_begin = chip8_ptr->registers->begin();
+        std::array<uint8_t, 16>::iterator reg_end = reg_begin + last_reg;
+        std::array<uint8_t, 4096>::iterator mem_start = chip8_ptr->memory->begin() +
+        chip8_ptr->index_reg;
+
+        std::copy(reg_begin, reg_end, mem_start);
+
     }
 
     void Instructions::OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr) {
