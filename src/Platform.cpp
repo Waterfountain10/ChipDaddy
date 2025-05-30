@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <format>
 #include <iostream>
+#include <thread>
 #include <memory>
 #include <map>
 #include <set>
+
 #include <SDL.h>
-#include <thread>
 
 #include "SDL.h"
 
@@ -60,6 +61,24 @@ namespace Chip8 {
             if (SDL_InitSubSystem(subsystem) != 0) return -1;
         }
         return 0;
+    }
+
+    void Platform::init_sdl_mixer(void)
+    {
+        SDL_AudioSpec spec = {
+            .format = AUDIO_F32,
+            .channels = 1,
+            .freq = SAMPLE_RATE,
+            .samples = BUFFER_SIZE
+            // .callback = std::function<>::audio_callback
+        };
+
+        if (SDL_OpenAudio(&spec, NULL) < 0) {
+            printf("Failed to open Audio Device: %s\n", SDL_GetError());
+            return;
+        }
+
+        SDL_PauseAudio(0);
     }
 
     int Platform::add_subsystem(uint32_t subsystem_code)

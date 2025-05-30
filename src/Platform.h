@@ -10,6 +10,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <SDL_audio.h>
 #include <SDL_events.h>
 
 #include "gui/gui.h"
@@ -33,10 +34,20 @@ public:
     gui_instance, unsigned ipf);
     ~Platform();
     int init_sdl();
+
+    const uint16_t SAMPLE_RATE = 44100;
+    const uint16_t BUFFER_SIZE = 4096;
+    void init_sdl_mixer();
+
     int add_subsystem(uint32_t subsystem_code);
+
     int read_input();
+
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
+
+    SDL_AudioCallback audio_callback(void *userdata, Uint8 *stream, int len);
+    void play_sound();
 
     int create_window_layer(); // TODO
 
@@ -49,6 +60,12 @@ private:
     const unsigned cycle_hz = 60;
     std::chrono::microseconds cycle_period;
     std::chrono::microseconds last_cycle_time;
+
+    struct AudioState {
+        double phase;           // current angle in radians
+        double phase_increment; // 2π·frequency/sample_rate
+        bool tone_on;           // whether to emit tone or silence
+    };
 };
 
 } // Chip8

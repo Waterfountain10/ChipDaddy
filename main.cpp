@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     // Initialize platform layer
     chip8_platform->add_subsystem(SDL_INIT_VIDEO);
     chip8_platform->add_subsystem(SDL_INIT_EVENTS);
+    chip8_platform->add_subsystem(SDL_INIT_AUDIO);
 
     chip8_platform->init_sdl();
 
