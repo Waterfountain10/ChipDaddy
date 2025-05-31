@@ -77,14 +77,24 @@ namespace Chip8 {
 
     int Platform::read_input()  // main key reading loop call method
     {
-        // Printing current key states for debugging
-        if (!this->key_states->empty()) {
-            for (int v : *this->key_states)            // elements come out sorted, no duplicates
-                std::cout << v << ' ';
-            std::cout << '\n';
-        }
-        while (SDL_PollEvent(&(this->curr_key_input_event))) { // read poll event only once
-            switch (this->curr_key_input_event.type) {
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
+        {
+            if (e.type == SDL_QUIT)
+            {
+                should_quit = true;
+                return -1;
+            }
+            // Printing current key states for debugging
+            if (!this->key_states->empty()) {
+                for (int v : *this->key_states)            // elements come out sorted, no duplicates
+                    std::cout << v << ' ';
+                std::cout << '\n';
+            }
+            while (SDL_PollEvent(&(this->curr_key_input_event)))
+            {
+                // read poll event only once
+                switch (this->curr_key_input_event.type) {
                 case SDL_KEYDOWN:
                     // Turn the Key on
                     this->add_key_state(this->curr_key_input_event.key.keysym);
@@ -105,6 +115,7 @@ namespace Chip8 {
                     // Do nothing
                     return 1;
                     break;
+                }
             }
         }
         return 0;
@@ -124,9 +135,10 @@ namespace Chip8 {
     }
 
     bool Platform::check_valid() {
-        if (!chip8_->get_rom_loaded()) return false;
-
-        return true;
+    //     if (!chip8_->get_rom_loaded()) return false;
+    //
+    //     return true;
+        return chip8_->get_rom_loaded() && !should_quit;
     }
 
     void Platform::run_frame() {
@@ -148,6 +160,9 @@ namespace Chip8 {
         (frame_end_time - frame_start_time);
         std::chrono::microseconds time_to_wait = cycle_period - elapsed;
 
+        gui_->render();
+
+        gui_->present_idle();
         // Sleep until time is up
         if (time_to_wait > std::chrono::microseconds::zero()) {
             std::this_thread::sleep_for(time_to_wait);

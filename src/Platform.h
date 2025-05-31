@@ -28,6 +28,7 @@ public:
 
     const std::shared_ptr<Chip> chip8_; // actual hardware
     const std::shared_ptr<Gui> gui_; // gui layer
+    bool should_quit{false};
 
     explicit Platform(std::shared_ptr<Chip> chip8_instance, std::shared_ptr<Gui>
     gui_instance, unsigned ipf);

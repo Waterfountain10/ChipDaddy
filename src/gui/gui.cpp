@@ -15,50 +15,52 @@
 namespace Chip8 {
 
 // CONSTRUCTOR
-Gui::Gui(std::string name, int width, int height, bool is_intro) {
+Gui::Gui(const std::string name, int width, int height, bool is_intro) {
 
     // initialize a window display
     this->win = SDL_CreateWindow(name.c_str(),
                                     SDL_WINDOWPOS_CENTERED,
                                     SDL_WINDOWPOS_CENTERED,
                                     width,height,
-                                    SDL_WINDOW_SHOWN);
+                                    0);
 
     // unopened gui exception handled in main.cpp
     if (win == nullptr)
         throw std::runtime_error("gui could not be opened!");
 
-    SDL_Surface* gui_display_surface = SDL_GetWindowSurface(win); // SDL allocates this pointer so no need to free
-    this->image_surface = nullptr;
+    //SDL_Surface* gui_display_surface = SDL_GetWindowSurface(win); // SDL allocates this pointer so no need to free
+    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    if (!ren)
+        throw std::runtime_error("SDL_CreateRenderer failed");
 
     // intro display (for rom selection screen)
     if (is_intro) {
         std::cout << "Running the gui select screen : Select your ROM" << std::endl;
-        this->image_surface = SDL_LoadBMP("../src/image/demo_gui.bmp");
-        if (image_surface == NULL) {
-            std::cout << "The image is not working, fuck." << std::endl;
-        }
+        SDL_SetRenderDrawColor(ren, 50, 50, 200, 255);
     }
-    else { // actual game display
-        // TODO : Implement the GAME DISPLAY
+    else {
+        SDL_SetRenderDrawColor(ren, 10, 10, 10, 255);
     }
-
-    // paste that image_surface on window_surface
-    SDL_BlitSurface(image_surface, NULL, gui_display_surface,NULL);
-    SDL_UpdateWindowSurface(win);
-
+    // one time clear + present so you see something right away
+    SDL_RenderClear(ren);
+    SDL_RenderPresent(ren);
 }
+
 
 // DESTRUCTOR
 Gui::~Gui() {
-    if (image_surface) {
-        SDL_FreeSurface(image_surface);
-        image_surface = nullptr;
-    }
-    if (win) {
-        SDL_DestroyWindow(win);
-        win = nullptr;
-    }
+    if (ren) SDL_DestroyRenderer(ren);
+    if (win) SDL_DestroyWindow(win);
+    ren = nullptr; win = nullptr;
+}
+
+void Gui::render() {
+    SDL_SetRenderDrawColor(ren, 20, 20, 20, 255);
+    SDL_RenderClear(ren);
+}
+
+void Gui::present_idle() {
+    SDL_RenderPresent(ren);
 }
 
 }

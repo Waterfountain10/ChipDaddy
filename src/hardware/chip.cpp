@@ -15,7 +15,11 @@ namespace Chip8 {
     registers(std::make_unique<std::array<uint8_t, 16>>()),
     memory(std::make_unique<std::array<uint8_t, 4096>>()),
     stack(std::make_unique<std::array<uint16_t, 16>>()),
-    gfx(std::make_shared<std::array<uint8_t, 64 * 32>>()),
+    index_reg(0),
+    program_ctr(rom_start_addr),
+    stack_ptr(0),
+    delay_timer(0),
+    sound_timer(0),
     fonts {{
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -37,7 +41,7 @@ namespace Chip8 {
     {
         init_counters();
         init_timers(0, 0);    // use default argument values 0, 0
-        load_fonts_in_memory();
+
     }
 
     int Chip::init_counters() {
@@ -57,6 +61,10 @@ namespace Chip8 {
 
     void Chip::init_instr_dispatcher() {
         instr_dispatcher = std::make_shared<Instructions>(shared_from_this());
+    }
+
+    void Chip::init_gfx() {
+        gfx = std::make_shared<std::array<uint8_t, 64 * 32>>();
     }
 
     int Chip::load_rom(std::ifstream *file_stream) {
