@@ -105,7 +105,6 @@ namespace Chip8 {
         return rom_loaded;
     }
 
-
     void Chip::set_rom_loaded(bool status) {
         rom_loaded = status;
     }
@@ -116,7 +115,6 @@ namespace Chip8 {
         if (sound_timer > 0) sound_timer--;
         return 0;
     }
-
 
     int Chip::cycle() {
         // validation

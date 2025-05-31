@@ -162,6 +162,16 @@ namespace Chip8 {
 
         gui_->render();
 
+        auto gfx_ptr = chip8_->get_gfx();
+        const int scale = 10;
+        for (int row = 0; row < 32; ++row) {
+            for (int col = 0; col < 64; ++col) {
+                size_t idx = col + row * 64;
+                bool pixel_on = ( (*gfx_ptr)[idx] != 0 );
+                gui_->draw_pixel(col, row, scale, pixel_on);
+            }
+        }
+
         gui_->present_idle();
         // Sleep until time is up
         if (time_to_wait > std::chrono::microseconds::zero()) {

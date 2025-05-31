@@ -17,6 +17,7 @@ class Gui {
         void render();
         void present_idle();
         bool input_rom_path(std::string rom_path);
+        void draw_pixel(int col, int row, int scale, bool on); // on, paint white, off is nothing
 
     private:
         SDL_Window* win = nullptr;

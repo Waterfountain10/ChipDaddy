@@ -29,7 +29,7 @@ Gui::Gui(const std::string name, int width, int height, bool is_intro) {
         throw std::runtime_error("gui could not be opened!");
 
     //SDL_Surface* gui_display_surface = SDL_GetWindowSurface(win); // SDL allocates this pointer so no need to free
-    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    this->ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     if (!ren)
         throw std::runtime_error("SDL_CreateRenderer failed");
 
@@ -63,4 +63,16 @@ void Gui::present_idle() {
     SDL_RenderPresent(ren);
 }
 
+void Gui::draw_pixel(int col, int row, int scale, bool on)
+{
+    if (!on) return;
+    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+    SDL_Rect r;
+    r.x = col * scale;
+    r.y = row * scale;
+    r.w = scale;
+    r.h = scale;
+    SDL_RenderFillRect(ren, &r);
+}
 }

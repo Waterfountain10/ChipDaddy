@@ -50,7 +50,9 @@ namespace Chip8 {
         int decrement_timers();
 
         int cycle();    // main loop
-
+        std::shared_ptr<std::array<uint8_t, 64 * 32>> get_gfx() const {
+            return gfx;
+        }
     private:
         bool rom_loaded = false;
 
