@@ -78,6 +78,8 @@ namespace Chip8 {
             return;
         }
 
+        this->audio_spec = spec;
+
         SDL_PauseAudio(0);
     }
 
@@ -141,6 +143,16 @@ namespace Chip8 {
         uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
         return key_states->erase(key);
     }
+
+    SDL_AudioCallback Platform::audio_callback(void *userdata, Uint8 *stream, int len) {
+        Sint16*   buf   = reinterpret_cast<Sint16*>(stream);
+        int       samples = len / sizeof(Sint16);  // number of 16-bit samples
+
+        for (int i = 0; i < samples; i++) {
+
+        }
+    }
+
 
     bool Platform::check_valid() {
         if (!chip8_->get_rom_loaded()) return false;

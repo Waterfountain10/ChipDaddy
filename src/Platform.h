@@ -61,11 +61,18 @@ private:
     std::chrono::microseconds cycle_period;
     std::chrono::microseconds last_cycle_time;
 
+    SDL_AudioSpec audio_spec;
+
     struct AudioState {
         double phase;           // current angle in radians
         double phase_increment; // 2π·frequency/sample_rate
+        double frequency;
         bool tone_on;           // whether to emit tone or silence
+        int sample_rate;
+        int amplitude;
     };
+
+    AudioState curr_audio_state;
 };
 
 } // Chip8
