@@ -16,8 +16,6 @@ add_executable(chip_8_emulator main.cpp
 )
 
 find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
 
 target_compile_features(chip_8_emulator
         PRIVATE

@@ -37,7 +37,7 @@ public:
 
     const uint16_t SAMPLE_RATE = 44100;
     const uint16_t BUFFER_SIZE = 4096;
-    void init_sdl_mixer();
+    int init_sdl_audio();
 
     int add_subsystem(uint32_t subsystem_code);
 
@@ -46,8 +46,9 @@ public:
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
 
-    SDL_AudioCallback audio_callback(void *userdata, Uint8 *stream, int len);
+    static void audio_callback(void *userdata, Uint8 *stream, int len);
     void play_sound();
+    void disable_sound();
 
     int create_window_layer(); // TODO
 
@@ -61,18 +62,19 @@ private:
     std::chrono::microseconds cycle_period;
     std::chrono::microseconds last_cycle_time;
 
-    SDL_AudioSpec audio_spec;
+    std::unique_ptr<SDL_AudioSpec> want_audio_spec;
+    std::unique_ptr<SDL_AudioSpec> have_audio_spec;
 
-    struct AudioState {
-        double phase;           // current angle in radians
+    struct AudioData {
+        double phase;           // current phase (in 2π) of the oscillator
         double phase_increment; // 2π·frequency/sample_rate
-        double frequency;
+        double frequency;       // Desired pitch in Hz
         bool tone_on;           // whether to emit tone or silence
-        int sample_rate;
-        int amplitude;
+        int sample_rate;        // default: 48000
+        int amplitude;          // max amplitude for 16-bits
     };
 
-    AudioState curr_audio_state;
+    std::unique_ptr<AudioData> curr_audio_data;
 };
 
 } // Chip8
