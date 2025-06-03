@@ -109,6 +109,12 @@ namespace Chip8 {
         return 0;
     }
 
+    void Chip::set_sound_timer(uint8_t time) {
+        sound_timer = time;
+        // TODO Add logic that turns sound on
+    }
+
+
 
     int Chip::cycle() {
         // validation

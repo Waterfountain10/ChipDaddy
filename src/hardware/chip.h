@@ -46,6 +46,8 @@ namespace Chip8 {
         bool get_rom_loaded();
         int load_rom(std::ifstream *file_stream);
 
+        void set_sound_timer(uint8_t time);
+
         int decrement_timers();
 
         int cycle();    // main loop
