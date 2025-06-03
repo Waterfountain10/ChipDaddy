@@ -126,28 +126,30 @@ namespace Chip8 {
                 std::cout << v << ' ';
             std::cout << '\n';
         }
-        while (SDL_PollEvent(&(this->curr_key_input_event))) { // read poll event only once
+        while (SDL_PollEvent(&(this->curr_key_input_event)))
+        {
+            // read poll event only once
             switch (this->curr_key_input_event.type) {
-                case SDL_KEYDOWN:
-                    // Turn the Key on
-                    this->add_key_state(this->curr_key_input_event.key.keysym);
-                    break;
+            case SDL_KEYDOWN:
+                // Turn the Key on
+                this->add_key_state(this->curr_key_input_event.key.keysym);
+                break;
 
-                case SDL_KEYUP:
-                    // If key is off then take the key off
-                    this->remove_key_state(this->curr_key_input_event.key.keysym);
-                    break;
+            case SDL_KEYUP:
+                // If key is off then take the key off
+                this->remove_key_state(this->curr_key_input_event.key.keysym);
+                break;
 
-                case SDL_QUIT:
-                    // Prompts SDL to close the window and program
-                    SDL_Quit();
-                    // Rest is dynamically handled
-                    break;
+            case SDL_QUIT:
+                // Prompts SDL to close the window and program
+                SDL_Quit();
+                // Rest is dynamically handled
+                break;
 
-                default:
-                    // Do nothing
-                    return 1;
-                    break;
+            default:
+                // Do nothing
+                return 1;
+                break;
             }
         }
         return 0;
@@ -211,8 +213,8 @@ namespace Chip8 {
     }
 
     bool Platform::check_valid() {
-        if (!chip8_->get_rom_loaded()) return false;
-        return true;
+        // true if rom loaded and no quitting key has been pressed
+        return chip8_->get_rom_loaded() && !should_quit;
     }
 
     void Platform::run_frame() {
@@ -224,7 +226,21 @@ namespace Chip8 {
             read_input();
             chip8_->cycle();
         }
-        // TODO: Update the platform screen after every frame ends
+        // Boiler plate code for RENDERING GFX
+        // TODO: render the actual memory instead of hardcoded pixels
+        gui_->clear();
+        // draw a vertical line
+        for (int r = center_row - 5; r <= center_row + 5; ++r) {
+            gui_->draw_pixel(center_col, r, scale, true);
+        }
+        // draw a horizontal line
+        for (int c = center_col - 5; c <= center_col + 5; ++c) {
+            gui_->draw_pixel(c, center_row, scale, true);
+        }
+        gui_->present_idle();
+
+        // TODO: Plays sound using SDL if sound_timer > 0
+
         chip8_->decrement_timers();
 
         // Plays sound based on condition

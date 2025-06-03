@@ -93,18 +93,29 @@ int main(int argc, char *argv[])
 
     // Prepare the hardware and gui layer -> dependency injection into platform layer
     std::shared_ptr<Chip8::Chip> chip8_hardware = std::make_shared<Chip8::Chip>(); // DONT FORGET TO ADD WEAK_PTRS
+    chip8_hardware->init_instr_dispatcher();
+    chip8_hardware->init_gfx();
+
+    // Create a game GUI and the platform
     std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",1000,1000, false);
-    std::unique_ptr<Chip8::Platform> chip8_platform =
-        std::make_unique<Chip8::Platform>(chip8_hardware, game_gui, ipf);
+    std::unique_ptr<Chip8::Platform> chip8_platform = std::make_unique<Chip8::Platform>(chip8_hardware, game_gui, ipf);
 
     // Initialize platform layer
     chip8_platform->add_subsystem(SDL_INIT_VIDEO);
     chip8_platform->add_subsystem(SDL_INIT_EVENTS);
+
+    std::cout << ">>> Added SDL Video and Events." << std::endl;
     chip8_platform->add_subsystem(SDL_INIT_AUDIO);
 
-    chip8_platform->init_sdl();
 
-    // File validation already done prior
+    chip8_platform->init_sdl();
+    std::cout << ">>> Initialized SDL Video and Events." << std::endl;
+
+    // Load the Fonts
+    chip8_hardware->load_fonts_in_memory();
+    std::cout << ">>> Loaded Fonts in Memory!" << std::endl;
+
+    // Load the ROM
     if (chip8_hardware->load_rom(&rom_file) != 0) {
         std::cout << std::format("The file {} did not load properly.\n", rom_path) << std::endl;
         return -1;
@@ -112,7 +123,7 @@ int main(int argc, char *argv[])
     rom_file.close();   // Closes the file after loading
 
     // START THE GAME
-    std::cout << "game started...\n" << std::endl;
+    std::cout << ">>> game started...\n" << std::endl;
 
     bool running = true;
     while (running && chip8_platform->check_valid()) {
