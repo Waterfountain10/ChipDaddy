@@ -135,13 +135,11 @@ namespace Chip8 {
     }
 
     bool Platform::check_valid() {
-    //     if (!chip8_->get_rom_loaded()) return false;
-    //
-    //     return true;
+        // true if rom loaded and no quitting key has been pressed
         return chip8_->get_rom_loaded() && !should_quit;
     }
 
-    void Platform::run_frame() {
+    void Platform::run_frame(std::shared_ptr<Chip8::Gui> gui_) {
         std::chrono::time_point frame_start_time = std::chrono::steady_clock::now();
         int cycles_to_run = ipf_;
 
@@ -150,8 +148,25 @@ namespace Chip8 {
             read_input();
             chip8_->cycle();
         }
-        // TODO: Update the platform screen after every frame ends
+
+        // Boiler plate code for RENDERING GFX
+        // TODO: render the actual memory instead of hardcoded pixels
+        gui_->clear();
+        const int scale = 10;
+        int center_row = 16; // halfway (32/2)
+        int center_col = 32;
+        // draw a vertical line
+        for (int r = center_row - 5; r <= center_row + 5; ++r) {
+            gui_->draw_pixel(center_col, r, scale, true);
+        }
+        // draw a horizontal line
+        for (int c = center_col - 5; c <= center_col + 5; ++c) {
+            gui_->draw_pixel(c, center_row, scale, true);
+        }
+        gui_->present_idle();
+
         // TODO: Plays sound using SDL if sound_timer > 0
+
         chip8_->decrement_timers();
 
         // Compute remaining time
@@ -160,19 +175,6 @@ namespace Chip8 {
         (frame_end_time - frame_start_time);
         std::chrono::microseconds time_to_wait = cycle_period - elapsed;
 
-        gui_->render();
-
-        auto gfx_ptr = chip8_->get_gfx();
-        const int scale = 10;
-        for (int row = 0; row < 32; ++row) {
-            for (int col = 0; col < 64; ++col) {
-                size_t idx = col + row * 64;
-                bool pixel_on = ( (*gfx_ptr)[idx] != 0 );
-                gui_->draw_pixel(col, row, scale, pixel_on);
-            }
-        }
-
-        gui_->present_idle();
         // Sleep until time is up
         if (time_to_wait > std::chrono::microseconds::zero()) {
             std::this_thread::sleep_for(time_to_wait);

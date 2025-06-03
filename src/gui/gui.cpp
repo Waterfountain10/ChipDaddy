@@ -54,7 +54,7 @@ Gui::~Gui() {
     ren = nullptr; win = nullptr;
 }
 
-void Gui::render() {
+void Gui::clear() {
     SDL_SetRenderDrawColor(ren, 20, 20, 20, 255);
     SDL_RenderClear(ren);
 }

@@ -44,7 +44,7 @@ public:
 
     bool check_valid();
 
-    void run_frame();
+    void run_frame(std::shared_ptr<Chip8::Gui> game_gui);
 
 private:
     unsigned ipf_;

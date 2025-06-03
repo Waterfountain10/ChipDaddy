@@ -100,38 +100,6 @@ int main(int argc, char *argv[])
     std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",1000,1000, false);
     std::unique_ptr<Chip8::Platform> chip8_platform = std::make_unique<Chip8::Platform>(chip8_hardware, game_gui, ipf);
 
-    // test out renderer with custom pixels
-    game_gui->render();
-    const int scale = 10;
-    int center_row = 16; // halfway (32/2)
-    int center_col = 32;
-    // draw a vertical line
-    for (int r = center_row - 5; r <= center_row + 5; ++r) {
-        game_gui->draw_pixel(center_col, r, scale, true);
-    }
-    // draw a horizontal line
-    for (int c = center_col - 5; c <= center_col + 5; ++c) {
-        game_gui->draw_pixel(c, center_row, scale, true);
-    }
-
-    game_gui->present_idle();
-
-    // pause ddrawing for 5 second just to see it better
-    uint32_t startTicks = SDL_GetTicks();
-    SDL_Event e;
-
-    while (SDL_GetTicks() - startTicks < 5000) {   // run for 5000 ms = 5 s
-        // 1) Handle any waiting SDL events so the window actually repaints
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                // If user clicks “window close,” you can break out here if you want
-            }
-        }
-
-        // 2) Small delay so this loop isn’t a full-CPU spin
-        SDL_Delay(16);  // ~60 fps “idle” between polls
-    }
-
     // Initialize platform layer
     chip8_platform->add_subsystem(SDL_INIT_VIDEO);
     chip8_platform->add_subsystem(SDL_INIT_EVENTS);
@@ -156,7 +124,7 @@ int main(int argc, char *argv[])
 
     bool running = true;
     while (running && chip8_platform->check_valid()) {
-        chip8_platform->run_frame();
+        chip8_platform->run_frame(game_gui);
     }
 
     std::cout << "...game ended\n" << std::endl;

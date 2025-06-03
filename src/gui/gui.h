@@ -14,7 +14,7 @@ class Gui {
     public:
         Gui(const std::string name, int width, int height, bool is_demo); // constructor
         ~Gui();
-        void render();
+        void clear();
         void present_idle();
         bool input_rom_path(std::string rom_path);
         void draw_pixel(int col, int row, int scale, bool on); // on, paint white, off is nothing
