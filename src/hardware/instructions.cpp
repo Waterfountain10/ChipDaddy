@@ -194,7 +194,10 @@ namespace Chip8 {
     }
 
     void Instructions::OP_CXNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00u) >> 8;
+        uint8_t byte = (opcode & 0x00FFu);
 
+        chip8_ptr->registers->at(reg) = chip8_ptr->get_random_number() & byte;
     }
 
     void Instructions::OP_DXYN(std::shared_ptr<Chip8::Chip> chip8_ptr) {

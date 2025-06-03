@@ -3,6 +3,7 @@
 //
 
 #include "chip.h"
+
 #include <iostream>
 #include <fstream>
 #include <format>
@@ -119,7 +120,6 @@ namespace Chip8 {
 
     void Chip::set_sound_timer(uint8_t time) {
         sound_timer = time;
-        // TODO Add logic that turns sound on
     }
 
     int Chip::cycle() {
