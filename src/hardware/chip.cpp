@@ -36,7 +36,8 @@ namespace Chip8 {
     {
         init_counters();
         init_timers(0, 0);    // use default argument values 0, 0
-
+        init_random_generator();
+        load_fonts_in_memory();
     }
 
     int Chip::init_counters() {
@@ -60,6 +61,11 @@ namespace Chip8 {
 
     void Chip::init_gfx() {
         gfx = std::make_shared<std::array<uint8_t, 64 * 32>>();
+    }
+
+    void Chip::init_random_generator() {
+        uniform_dist = std::uniform_int_distribution<uint8_t>{ 0, 255u };
+        random_engine = std::default_random_engine{};
     }
 
     int Chip::load_rom(std::ifstream *file_stream) {
@@ -110,10 +116,12 @@ namespace Chip8 {
         if (sound_timer > 0) sound_timer--;
         return 0;
     }
+
     void Chip::set_sound_timer(uint8_t time) {
         sound_timer = time;
         // TODO Add logic that turns sound on
     }
+
     int Chip::cycle() {
         // validation
         if (program_ctr + 1 >= memory->size()) {
@@ -133,5 +141,9 @@ namespace Chip8 {
         // move relevant counters and timers
         program_ctr += 2;
         return 0;
+    }
+
+    uint8_t Chip::get_random_number() {
+        return uniform_dist(random_engine);
     }
 }

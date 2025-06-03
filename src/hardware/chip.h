@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <random>
 #include <memory>
 #include <vector>
 
@@ -23,10 +24,10 @@ namespace Chip8 {
         const std::unique_ptr<std::array<uint8_t, 16>> registers;  //uint8_t registers[16];
         const std::unique_ptr<std::array<uint8_t, 4096>> memory;     //uint8_t memory[4096];
         const std::unique_ptr<std::array<uint16_t, 16>> stack;     //uint16_t stack[16];
+        std::shared_ptr<std::array<uint8_t, 64 * 32>> gfx; //uint8_t gfx[64 * 32];
         std::array<uint8_t, 80> fonts;
 
         std::shared_ptr<Instructions> instr_dispatcher; // lifetime is managed by the hardware
-        std::shared_ptr<std::array<uint8_t, 64 * 32>> gfx;
         // Do not reference platform as it is abstraction layer
 
         // TODO: Whether to make these dynamic using stdlib
@@ -52,11 +53,19 @@ namespace Chip8 {
         int decrement_timers();
 
         int cycle();    // main loop
+
         std::shared_ptr<std::array<uint8_t, 64 * 32>> get_gfx() const {
             return gfx;
         }
+
+        uint8_t get_random_number();
+
     private:
+        std::uniform_int_distribution<uint8_t> uniform_dist;
+        std::default_random_engine random_engine;
         bool rom_loaded = false;
+
+        void init_random_generator();
 
         void set_rom_loaded(bool status);
     };
