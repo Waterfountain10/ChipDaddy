@@ -27,7 +27,7 @@ if(APPLE)
     if(EXISTS "/opt/homebrew/Cellar/sdl2_image")
         include_directories("/opt/homebrew/include")
         target_link_directories(chip_8_emulator PRIVATE "/opt/homebrew/lib")
-        target_link_libraries(chip_8_emulator PRIVATE SDL2 SDL2_image)
+        target_link_libraries(chip_8_emulator PRIVATE SDL2 SDL2_image SDL2_mixer)
     endif()
 endif()
 
@@ -36,6 +36,7 @@ include_directories(${SDL2_INCLUDE_DIRS})
 
 target_link_libraries(chip_8_emulator
         PRIVATE
+        ${SDL2_LIBRARIES}
         SDL2::SDL2
         SDL2::SDL2main
 ) # links all libraries to our chip-8 app
@@ -43,4 +44,5 @@ target_include_directories(chip_8_emulator
         PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${SDL2_IMAGE_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS}
 ) # tells CLion where the headers are)

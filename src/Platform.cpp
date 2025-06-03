@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <format>
 #include <iostream>
+#include <thread>
 #include <memory>
 #include <map>
 #include <set>
+
 #include <SDL.h>
-#include <thread>
 
 #include "SDL.h"
 
@@ -59,6 +60,48 @@ namespace Chip8 {
         for (uint32_t subsystem : *(this->sdl_subsystems_)) {
             if (SDL_InitSubSystem(subsystem) != 0) return -1;
         }
+
+        init_sdl_audio();
+        return 0;
+    }
+
+    int Platform::init_sdl_audio(void)
+    {
+        curr_audio_data = std::make_unique<AudioData>();
+        curr_audio_data->phase       = 0.0;
+        curr_audio_data->frequency   = 440.0;     // default beep frequency (A4)
+        curr_audio_data->sample_rate = 48000;     // 48 kHz
+        curr_audio_data->amplitude   = 28000;
+        curr_audio_data->tone_on     = false;
+        curr_audio_data->phase_increment =
+            (2.0 * M_PI * curr_audio_data->frequency) / curr_audio_data->sample_rate;
+
+        want_audio_spec = std::make_unique<SDL_AudioSpec>();
+        want_audio_spec->freq = curr_audio_data->sample_rate;
+        want_audio_spec->format   = AUDIO_S16SYS;       // signed 16-bit
+        want_audio_spec->channels = 1;                  // mono
+        want_audio_spec->samples  = 1024;               // buffer size
+        want_audio_spec->callback = Platform::audio_callback;
+        want_audio_spec->userdata = curr_audio_data.get();
+
+        SDL_AudioSpec have;
+        SDL_zero(have);
+        SDL_AudioDeviceID dev = SDL_OpenAudioDevice(
+            nullptr,      // default output device
+            0,            // playback (not capture)
+            want_audio_spec.get(),        // our requested spec
+            &have,        // what SDL actually provides
+            0             // do not allow any automatic changes
+        );
+        this->have_audio_spec = std::make_unique<SDL_AudioSpec>(have);
+
+        if (dev == 0) {
+            std::cerr << "SDL_OpenDeviceError" << SDL_GetError();
+            SDL_Quit();
+            return -1;
+        }
+
+        SDL_PauseAudioDevice(dev, 0);
         return 0;
     }
 
@@ -134,6 +177,50 @@ namespace Chip8 {
         return key_states->erase(key);
     }
 
+    /**
+     * @brief SDL audio callback that generates a tone or silence based on AudioData state.
+     *
+     * This function is called by SDL when the audio device needs more samples. It casts
+     * the provided userdata to an AudioData pointer, then fills the output buffer with
+     * either a sine wave (if audio->sound_on is true) or zeros (silence).
+     *
+     * @param userdata Pointer to an AudioData instance containing the oscillator state.
+     * @param stream   Pointer to the audio buffer that SDL expects to be filled (Uint8*).
+     * @param len      Length of the audio buffer in bytes.
+     */
+    void Platform::audio_callback(void *userdata, Uint8 *stream, int len) {
+        Platform::AudioData* audio_data = static_cast<Platform::AudioData*>(userdata);
+        Sint16* buf = reinterpret_cast<Sint16*>(stream);    // convert the stream to 16-bit samples
+        int samples = len / sizeof(Sint16);  // number of 16-bit samples
+
+        for (int i = 0; i < samples; i++) {
+            if (audio_data->tone_on) {
+                // Generate a sine wave at the current phase
+                std::cout << buf[i] << std::endl;
+                double value = std::sin(audio_data->phase);
+                buf[i] = static_cast<Sint16>(audio_data->amplitude * value);
+
+                // Increment phase and wrap around at 2π to keep it in range
+                audio_data->phase += audio_data->phase_increment;
+                if (audio_data->phase >= 2.0 * M_PI) {
+                    audio_data->phase -= 2.0 * M_PI;
+                }
+                std::cout << audio_data->phase << std::endl;
+            } else {
+                // Output silence when the sound is off
+                buf[i] = 0;
+            }
+        }
+    }
+
+    void Platform::play_sound() {
+        curr_audio_data->tone_on = true;
+    }
+
+    void Platform::disable_sound() {
+        curr_audio_data->tone_on = false;
+    }
+
     bool Platform::check_valid() {
         // true if rom loaded and no quitting key has been pressed
         return chip8_->get_rom_loaded() && !should_quit;
@@ -148,7 +235,6 @@ namespace Chip8 {
             read_input();
             chip8_->cycle();
         }
-
         // Boiler plate code for RENDERING GFX
         // TODO: render the actual memory instead of hardcoded pixels
         gui_->clear();
@@ -168,6 +254,14 @@ namespace Chip8 {
         // TODO: Plays sound using SDL if sound_timer > 0
 
         chip8_->decrement_timers();
+
+        // Plays sound based on condition
+        // if (chip8_->sound_timer > 0 && !curr_audio_data.tone_on) {
+        //     play_sound();
+        // }
+        // else if (chip8_->sound_timer == 0 && curr_audio_data.tone_on) {
+        //     disable_sound();
+        // }
 
         // Compute remaining time
         std::chrono::time_point<std::chrono::steady_clock> frame_end_time = std::chrono::steady_clock::now();

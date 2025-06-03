@@ -10,6 +10,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <SDL_audio.h>
 #include <SDL_events.h>
 
 #include "gui/gui.h"
@@ -35,10 +36,21 @@ public:
     gui_instance, unsigned ipf);
     ~Platform();
     int init_sdl();
+
+    const uint16_t SAMPLE_RATE = 44100;
+    const uint16_t BUFFER_SIZE = 4096;
+    int init_sdl_audio();
+
     int add_subsystem(uint32_t subsystem_code);
+
     int read_input();
+
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
+
+    static void audio_callback(void *userdata, Uint8 *stream, int len);
+    void play_sound();
+    void disable_sound();
 
     int create_window_layer(); // TODO
 
@@ -51,6 +63,20 @@ private:
     const unsigned cycle_hz = 60;
     std::chrono::microseconds cycle_period;
     std::chrono::microseconds last_cycle_time;
+
+    std::unique_ptr<SDL_AudioSpec> want_audio_spec;
+    std::unique_ptr<SDL_AudioSpec> have_audio_spec;
+
+    struct AudioData {
+        double phase;           // current phase (in 2π) of the oscillator
+        double phase_increment; // 2π·frequency/sample_rate
+        double frequency;       // Desired pitch in Hz
+        bool tone_on;           // whether to emit tone or silence
+        int sample_rate;        // default: 48000
+        int amplitude;          // max amplitude for 16-bits
+    };
+
+    std::unique_ptr<AudioData> curr_audio_data;
 };
 
 } // Chip8
