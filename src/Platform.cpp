@@ -120,45 +120,36 @@ namespace Chip8 {
 
     int Platform::read_input()  // main key reading loop call method
     {
-        SDL_Event e;
-        while (SDL_PollEvent(&e))
+        // Printing current key states for debugging
+        if (!this->key_states->empty()) {
+            for (int v : *this->key_states)            // elements come out sorted, no duplicates
+                std::cout << v << ' ';
+            std::cout << '\n';
+        }
+        while (SDL_PollEvent(&(this->curr_key_input_event)))
         {
-            if (e.type == SDL_QUIT)
-            {
-                should_quit = true;
-                return -1;
-            }
-            // Printing current key states for debugging
-            if (!this->key_states->empty()) {
-                for (int v : *this->key_states)            // elements come out sorted, no duplicates
-                    std::cout << v << ' ';
-                std::cout << '\n';
-            }
-            while (SDL_PollEvent(&(this->curr_key_input_event)))
-            {
-                // read poll event only once
-                switch (this->curr_key_input_event.type) {
-                case SDL_KEYDOWN:
-                    // Turn the Key on
-                    this->add_key_state(this->curr_key_input_event.key.keysym);
-                    break;
+            // read poll event only once
+            switch (this->curr_key_input_event.type) {
+            case SDL_KEYDOWN:
+                // Turn the Key on
+                this->add_key_state(this->curr_key_input_event.key.keysym);
+                break;
 
-                case SDL_KEYUP:
-                    // If key is off then take the key off
-                    this->remove_key_state(this->curr_key_input_event.key.keysym);
-                    break;
+            case SDL_KEYUP:
+                // If key is off then take the key off
+                this->remove_key_state(this->curr_key_input_event.key.keysym);
+                break;
 
-                case SDL_QUIT:
-                    // Prompts SDL to close the window and program
-                    SDL_Quit();
-                    // Rest is dynamically handled
-                    break;
+            case SDL_QUIT:
+                // Prompts SDL to close the window and program
+                SDL_Quit();
+                // Rest is dynamically handled
+                break;
 
-                default:
-                    // Do nothing
-                    return 1;
-                    break;
-                }
+            default:
+                // Do nothing
+                return 1;
+                break;
             }
         }
         return 0;
@@ -226,7 +217,7 @@ namespace Chip8 {
         return chip8_->get_rom_loaded() && !should_quit;
     }
 
-    void Platform::run_frame(std::shared_ptr<Chip8::Gui> gui_) {
+    void Platform::run_frame() {
         std::chrono::time_point frame_start_time = std::chrono::steady_clock::now();
         int cycles_to_run = ipf_;
 
@@ -238,9 +229,6 @@ namespace Chip8 {
         // Boiler plate code for RENDERING GFX
         // TODO: render the actual memory instead of hardcoded pixels
         gui_->clear();
-        const int scale = 10;
-        int center_row = 16; // halfway (32/2)
-        int center_col = 32;
         // draw a vertical line
         for (int r = center_row - 5; r <= center_row + 5; ++r) {
             gui_->draw_pixel(center_col, r, scale, true);

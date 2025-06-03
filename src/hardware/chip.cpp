@@ -15,11 +15,6 @@ namespace Chip8 {
     registers(std::make_unique<std::array<uint8_t, 16>>()),
     memory(std::make_unique<std::array<uint8_t, 4096>>()),
     stack(std::make_unique<std::array<uint16_t, 16>>()),
-    index_reg(0),
-    program_ctr(rom_start_addr),
-    stack_ptr(0),
-    delay_timer(0),
-    sound_timer(0),
     fonts {{
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1

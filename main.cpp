@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
     bool running = true;
     while (running && chip8_platform->check_valid()) {
-        chip8_platform->run_frame(game_gui);
+        chip8_platform->run_frame();
     }
 
     std::cout << "...game ended\n" << std::endl;
