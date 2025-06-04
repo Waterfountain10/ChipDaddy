@@ -229,14 +229,14 @@ namespace Chip8 {
         // Boiler plate code for RENDERING GFX
         // TODO: render the actual memory instead of hardcoded pixels
         gui_->clear();
-        // draw a vertical line
-        for (int r = center_row - 5; r <= center_row + 5; ++r) {
-            gui_->draw_pixel(center_col, r, scale, true);
-        }
-        // draw a horizontal line
-        for (int c = center_col - 5; c <= center_col + 5; ++c) {
-            gui_->draw_pixel(c, center_row, scale, true);
-        }
+            // draw a vertical line
+            for (int r = center_row - 5; r <= center_row + 5; ++r) {
+                gui_->draw_pixel(center_col, r, scale, true);
+            }
+            // draw a horizontal line
+            for (int c = center_col - 5; c <= center_col + 5; ++c) {
+                gui_->draw_pixel(c, center_row, scale, true);
+            }
         gui_->present_idle();
 
         // TODO: Plays sound using SDL if sound_timer > 0

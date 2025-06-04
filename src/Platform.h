@@ -71,7 +71,7 @@ private:
 
     struct AudioData {
         double phase;           // current phase (in 2π) of the oscillator
-        double phase_increment; // 2π·frequency/sample_rate
+        double phase_increment; // 2pi·frequency/sample_rate
         double frequency;       // Desired pitch in Hz
         bool tone_on;           // whether to emit tone or silence
         int sample_rate;        // default: 48000
