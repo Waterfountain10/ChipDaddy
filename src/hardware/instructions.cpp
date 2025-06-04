@@ -142,10 +142,34 @@ namespace Chip8 {
         // executes
     }
 
+    /**
+     * @brief LD Vx, Vy
+     *
+     * Set Vx = Vy.
+     *
+     * Stores the value of register Vy in register Vx.
+     *
+     * @param chip8_ptr
+    */
     void Instructions::OP_8XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+        chip8_ptr->registers->at(reg_x) = value_y;
     }
 
+    /**
+     * @brief OR Vx, Vy
+     *
+     * Set Vx = Vx OR Vy.
+     *
+     * Performs a bitwise OR on the values of Vx and Vy, then stores the result in Vx.
+     * A bitwise OR compares the corresponding bits from two values, and if either bit is 1,
+     * then the same bit in the result is also 1. Otherwise, it is 0.
+     *
+     * @param chip8_ptr
+    */
     void Instructions::OP_8XY1(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
         uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
@@ -157,16 +181,76 @@ namespace Chip8 {
         chip8_ptr->registers->at(reg_x) = c;
     }
 
+    /**
+     * @brief AND Vx, Vy
+     *
+     * Set Vx = Vx AND Vy.
+     *
+     * Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx.
+     * A bitwise AND compares the corresponding bits from two values, and if both bit is 1,
+     * then the same bit in the result is also 1. Otherwise, it is 0.
+     *
+     * @param chip8_ptr
+    */
     void Instructions::OP_8XY2(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        uint8_t c = static_cast<uint8_t>(value_x & value_y);
+        chip8_ptr->registers->at(reg_x) = c;
     }
 
+    /**
+     * @brief XOR Vx, Vy
+     *
+     * Set Vx = Vx XOR Vy.
+     *
+     * Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx.
+     * An exclusive OR compares the corresponding bits from two values, and if the bits are not both the same,
+     * then the corresponding bit in the result is set to 1. Otherwise, it is 0.
+     *
+     * @param chip8_ptr
+    */
     void Instructions::OP_8XY3(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        uint8_t c = static_cast<uint8_t>(value_x ^ value_y);
+        chip8_ptr->registers->at(reg_x);
     }
+
+    /**
+     * @brief ADD Vx, Vy
+     *
+     * Set Vx = Vx + Vy, set VF = carry.
+     *
+     * The values of Vx and Vy are added together.
+     * If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0.
+     * Only the lowest 8 bits of the result are kept, and stored in Vx.
+     *
+     * @param chip8_ptr
+    */
     void Instructions::OP_8XY4(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        uint16_t full_sum_value = value_x + value_y;
+        chip8_ptr->registers->at(0xF) = 0;
+        if (full_sum_value > 255) {
+            chip8_ptr->registers->at(0xF) = 1;
+        }
+        chip8_ptr->registers->at(reg_x) = (full_sum_value & 0xFF);
     }
+
     void Instructions::OP_8XY5(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
     }
