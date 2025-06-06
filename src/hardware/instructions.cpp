@@ -246,20 +246,77 @@ namespace Chip8 {
         uint16_t full_sum_value = value_x + value_y;
         chip8_ptr->registers->at(0xF) = 0;
         if (full_sum_value > 255) {
+            chip8_ptr->registers->at(0xF) = 1; // VF (carry) = 1
+        }
+        chip8_ptr->registers->at(reg_x) = (full_sum_value & 0x00FF); // 8 lowest bits
+    }
+
+    /**
+     * @brief SUB Vx, Vy
+     *
+     * Set Vx = Vx - Vy, set VF = NOT borrow.
+     *
+     * If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+     *
+     * @param chip8_ptr
+     */
+    void Instructions::OP_8XY5(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
+
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        chip8_ptr->registers->at(0xF) = 0;
+        if (value_x > value_y) {
             chip8_ptr->registers->at(0xF) = 1;
         }
-        chip8_ptr->registers->at(reg_x) = (full_sum_value & 0xFF);
+        uint16_t full_diff = value_x - value_y;
+        chip8_ptr->registers->at(reg_x) = (full_diff & 0x00FF); // 8 lowest bits
     }
 
-    void Instructions::OP_8XY5(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
-    }
+    /**
+     * @brief SHR Vx {, Vy}
+     *
+     * Set Vx = Vx SHR 1.
+     *
+     * If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0.
+     * Then Vx is divided by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_8XY6(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t lsb_x = (value_x & 0x000Fu);
+        chip8_ptr->registers->at(0xF) = 0;
+        if (lsb_x == 1) chip8_ptr->registers->at(0xF) = 1;
+
+        chip8_ptr->registers->at(reg_x) = (value_x / 2);
     }
+
+    /**
+     * @brief SUBN Vx, Vy
+     *
+     * Set Vx = Vx SHL 1.
+     *
+     * If the most-significant bit of Vx is 1, then VF is set to 1, otherwise 0.
+     * Then Vx is multiplied by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_8XY7(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t msb = (value_x & 0xF000u);
+        chip8_ptr->registers->at(0xF) = 0;
+        if (msb == 1) chip8_ptr->registers->at(0xF) = 1;
+        chip8_ptr->registers->at(reg_x) = (value_x * 2);
     }
+
+
     void Instructions::OP_8XYE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
 
     }
