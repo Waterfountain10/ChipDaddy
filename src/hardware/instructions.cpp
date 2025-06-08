@@ -479,15 +479,15 @@ namespace Chip8 {
 
     void Instructions::draw(uint8_t sprite_byte, uint8_t x, uint8_t y, std::shared_ptr<Chip8::Chip>
     chip8_ptr) {
-        for (int bit = 8; bit > 0; bit--) {
-            uint8_t sprite_pixel = sprite_byte & (0b100000000u >> bit); // mask out single bit
+        for (int bit = 0; bit < 8; bit++) {
+            uint8_t sprite_pixel = sprite_byte & (0b10000000u >> bit); // mask out single bit
             uint8_t* gfx_ptr = &chip8_ptr->gfx->at(x).at(y);
 
             if (sprite_pixel && *gfx_ptr) {
                 chip8_ptr->registers->at(0xF) = 1;
             }
 
-            *gfx_ptr ^= sprite_pixel;
+            *(gfx_ptr + bit) ^= sprite_pixel;
         }
     }
 
