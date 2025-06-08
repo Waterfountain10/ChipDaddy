@@ -24,7 +24,7 @@ namespace Chip8 {
         const std::unique_ptr<std::array<uint8_t, 16>> registers;  //uint8_t registers[16];
         const std::unique_ptr<std::array<uint8_t, 4096>> memory;     //uint8_t memory[4096];
         const std::unique_ptr<std::array<uint16_t, 16>> stack;     //uint16_t stack[16];
-        std::shared_ptr<std::array<uint8_t, 64 * 32>> gfx; //uint8_t gfx[64 * 32];
+        std::shared_ptr<std::array<std::array<uint8_t, 32>, 64>> gfx; //uint8_t gfx[64][32];
         std::array<uint8_t, 80> fonts;
 
         std::shared_ptr<Instructions> instr_dispatcher; // lifetime is managed by the hardware
@@ -53,7 +53,7 @@ namespace Chip8 {
 
         int cycle();    // main loop
 
-        std::shared_ptr<std::array<uint8_t, 64 * 32>> get_gfx() const {
+        std::shared_ptr<std::array<std::array<uint8_t, 32>, 64>> get_gfx() const {
             return gfx;
         }
 

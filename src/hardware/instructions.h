@@ -96,6 +96,8 @@ namespace Chip8 {
         void OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr);
 
         void OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr);
+
+        void draw(uint8_t sprite_byte, uint8_t x, uint8_t y, std::shared_ptr<Chip8::Chip> chip8_ptr);
     };
 }
 

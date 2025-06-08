@@ -23,8 +23,6 @@ class Gui {
 
         int update_texture(uint8_t* gfx_ptr);
 
-
-
     private:
         SDL_Window* win = nullptr;
         SDL_Texture*  screen_texture;

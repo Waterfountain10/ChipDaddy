@@ -93,6 +93,8 @@ int main(int argc, char *argv[])
 
     // Prepare the hardware and gui layer -> dependency injection into platform layer
     std::shared_ptr<Chip8::Chip> chip8_hardware = std::make_shared<Chip8::Chip>(); // DONT FORGET TO ADD WEAK_PTRS
+
+    // Initialize hardware functionalities
     chip8_hardware->init_instr_dispatcher();
     chip8_hardware->init_gfx();
 
