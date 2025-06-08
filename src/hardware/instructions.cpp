@@ -268,9 +268,8 @@ namespace Chip8 {
         uint8_t value_y = chip8_ptr->registers->at(reg_y);
 
         chip8_ptr->registers->at(0xF) = 0;
-        if (value_x > value_y) {
-            chip8_ptr->registers->at(0xF) = 1;
-        }
+        if (value_x > value_y) chip8_ptr->registers->at(0xF) = 1;
+
         uint16_t full_diff = value_x - value_y;
         chip8_ptr->registers->at(reg_x) = (full_diff & 0x00FF); // 8 lowest bits
     }
@@ -299,32 +298,74 @@ namespace Chip8 {
     /**
      * @brief SUBN Vx, Vy
      *
-     * Set Vx = Vx SHL 1.
+     * Set Vx = Vy - Vx, set VF = NOT borrow.
      *
-     * If the most-significant bit of Vx is 1, then VF is set to 1, otherwise 0.
-     * Then Vx is multiplied by 2.
+     * If Vy > Vx, then VF is set to 1, otherwise 0.
+     * Then Vx is subtracted from Vy, and the results stored in Vx.
      *
      * @param chip8_ptr
      */
     void Instructions::OP_8XY7(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 8u;
 
         uint8_t value_x = chip8_ptr->registers->at(reg_x);
-        uint8_t msb = (value_x & 0xF000u);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
         chip8_ptr->registers->at(0xF) = 0;
-        if (msb == 1) chip8_ptr->registers->at(0xF) = 1;
+        if (value_y > value_x) chip8_ptr->registers->at(0xF) = 1;
+
+        uint16_t full_diff = value_y - value_x;
+        chip8_ptr->registers->at(reg_x) = (full_diff & 0x00FF); // 8 lowest bits
+    }
+
+    /**
+     * @brief SHL Vx {, Vy}
+     * Set Vx = Vx SHL 1.
+     *
+     * If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0.
+     * Then Vx is multiplied by 2.
+     *
+     * @param chip8_ptr
+     */
+    void Instructions::OP_8XYE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t msb_x = (value_x & 0xF000u);
+        chip8_ptr->registers->at(0xF) = 0;
+        if (msb_x == 1) chip8_ptr->registers->at(0xF) = 1; // VF = 1
+
         chip8_ptr->registers->at(reg_x) = (value_x * 2);
     }
 
-
-    void Instructions::OP_8XYE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
-    }
-
+    /**
+     * @brief SNE Vx, Vy
+     * Skip next instruction if Vx != Vy.
+     *
+     * The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_9XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 8u;
 
+        uint8_t value_x = chip8_ptr->registers->at(reg_x);
+        uint8_t value_y = chip8_ptr->registers->at(reg_y);
+
+        if (value_x != value_y) chip8_ptr->program_ctr += 2;
     }
 
+    /**
+     * @brief LD I, addr
+     *
+     * Set I = nnn.
+     *
+     * The value of register I is set to nnn.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_ANNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint16_t addr = opcode & 0x0FFFu;
         chip8_ptr->index_reg = addr;
