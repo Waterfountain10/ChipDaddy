@@ -47,6 +47,7 @@ public:
 
     int read_input();
 
+    bool is_valid_key(SDL_Keysym keysym);
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
 

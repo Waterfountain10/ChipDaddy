@@ -134,6 +134,6 @@ int main(int argc, char *argv[])
 
     std::cout << "...game ended\n" << std::endl;
 
-    chip8_platform->~Platform(); // End of all SDL subsystems + destruct layer
+    // End of all SDL subsystems + destruct layer
     return 0;
 }
