@@ -33,7 +33,7 @@ cmake_install.cmake
 Thumbs.db
 
 # CLion files
-#.idea/
+.idea/
 *.iml
 
 # VS Code files
