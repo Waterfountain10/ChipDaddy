@@ -35,6 +35,8 @@ namespace Chip8 {
         uint8_t stack_ptr;
         uint8_t delay_timer;
         uint8_t sound_timer;
+        bool waiting_for_key;
+        uint8_t waiting_reg;
 
         explicit Chip();
         ~Chip() = default;
@@ -42,6 +44,7 @@ namespace Chip8 {
         int init_timers(uint8_t delay_time, uint8_t sound_time);
         void init_instr_dispatcher();
         void init_gfx();
+        void init_waiting();
 
         bool load_fonts_in_memory(std::string start_address = "050");
         bool get_rom_loaded();
@@ -58,6 +61,12 @@ namespace Chip8 {
         }
 
         uint8_t get_random_number();
+
+        bool is_waiting_for_key();
+
+        void set_waiting_register(uint8_t reg);
+
+        void complete_key_wait(uint8_t key);
 
     private:
         std::uniform_int_distribution<uint8_t> uniform_dist;

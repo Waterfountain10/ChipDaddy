@@ -129,6 +129,7 @@ namespace Chip8 {
         while (SDL_PollEvent(&(this->curr_key_input_event)))
         {
             // read poll event only once
+            uint8_t key;
             switch (this->curr_key_input_event.type) {
             case SDL_KEYDOWN:
                 // Turn the Key on
@@ -137,18 +138,27 @@ namespace Chip8 {
 
             case SDL_KEYUP:
                 // If key is off then take the key off
+                uint8_t keycode = curr_key_input_event.key.keysym.sym;
+                auto iterator = key_mapping->find(keycode);
+                if (iterator != key_mapping->end()) {
+                    uint8_t key = iterator->second;
+                    if (chip8_->waiting_reg == 0xFF) break; // avoid seg fault
+                    chip8_->complete_key_wait(key);
+                }
+
                 this->remove_key_state(this->curr_key_input_event.key.keysym);
+
                 break;
 
             case SDL_QUIT:
                 // Prompts SDL to close the window and program
                 SDL_Quit();
                 // Rest is dynamically handled
+                return 1;
                 break;
 
             default:
                 // Do nothing
-                return 1;
                 break;
             }
         }
@@ -167,6 +177,7 @@ namespace Chip8 {
         uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
         return key_states->erase(key);
     }
+
 
     /**
      * @brief SDL audio callback that generates a tone or silence based on AudioData state.
@@ -224,7 +235,9 @@ namespace Chip8 {
         // Run instructions per frame as specified;
         for (int i = 0; i < ipf_; ++i) {
             read_input();
-            chip8_->cycle();
+            if (!chip8_->is_waiting_for_key()) { // skip cycle if waiting for a key
+                chip8_->cycle();
+            }
         }
         // Boiler plate code for RENDERING GFX
         // TODO: render the actual memory instead of hardcoded pixels
