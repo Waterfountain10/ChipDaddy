@@ -142,6 +142,7 @@ namespace Chip8 {
                 auto iterator = key_mapping->find(keycode);
                 if (iterator != key_mapping->end()) {
                     uint8_t key = iterator->second;
+                    if (chip8_->waiting_reg == 0xFF) break; // avoid seg fault
                     chip8_->complete_key_wait(key);
                 }
 
@@ -153,11 +154,11 @@ namespace Chip8 {
                 // Prompts SDL to close the window and program
                 SDL_Quit();
                 // Rest is dynamically handled
+                return 1;
                 break;
 
             default:
                 // Do nothing
-                return 1;
                 break;
             }
         }
