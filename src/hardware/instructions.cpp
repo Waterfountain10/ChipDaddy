@@ -5,6 +5,9 @@
 #include "instructions.h"
 
 #include <chrono>
+#include <map>
+#include <SDL_events.h>
+#include <SDL_timer.h>
 
 namespace Chip8 {
     // public
@@ -404,15 +407,34 @@ namespace Chip8 {
         // executes
     }
 
+    /**
+     * @brief LD Vx, DT
+     *
+     * Set Vx = delay timer value.
+     *
+     * The value of DT is placed into Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX07(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8u;
-        uint8_t v = chip8_ptr->delay_timer;
+        uint8_t delay_v = chip8_ptr->delay_timer;
 
-        chip8_ptr->registers->at(reg) = v;
+        chip8_ptr->registers->at(reg) = delay_v;
     }
 
+    /**
+     * @brief LD Vx, K
+     *
+     * Wait for a key press, store the value of the key in Vx.
+     * All execution stops until a key is pressed, then the value of that key is stored in Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX0A(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        chip8_ptr->set_waiting_register(reg_x);
+        // value of key is stored in Vx at SDL_KEYUP inside Platform.cpp
     }
 
     void Instructions::OP_FX15(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -430,7 +452,6 @@ namespace Chip8 {
     }
 
     void Instructions::OP_FX1E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
     }
 
     void Instructions::OP_FX29(std::shared_ptr<Chip8::Chip> chip8_ptr) {

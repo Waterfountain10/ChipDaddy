@@ -39,7 +39,10 @@ namespace Chip8 {
         init_timers(0, 0);    // use default argument values 0, 0
         init_random_generator();
         load_fonts_in_memory();
+        init_waiting();
     }
+
+    // INITIALIZERS
 
     int Chip::init_counters() {
         this->index_reg = 0x000; // aka i (stores memory address by rom)
@@ -68,6 +71,14 @@ namespace Chip8 {
         uniform_dist = std::uniform_int_distribution<uint8_t>{ 0, 255u };
         random_engine = std::default_random_engine{};
     }
+
+    void Chip::init_waiting() {
+        this->waiting_for_key = false;
+        this->waiting_reg = 0xFF;
+    }
+
+
+    // FUNCTIONS
 
     int Chip::load_rom(std::ifstream *file_stream) {
         std::streamsize file_size = file_stream->tellg();
@@ -145,5 +156,21 @@ namespace Chip8 {
 
     uint8_t Chip::get_random_number() {
         return uniform_dist(random_engine);
+    }
+
+    bool Chip::is_waiting_for_key() {
+        return waiting_for_key;
+    }
+
+    void Chip::set_waiting_register(uint8_t reg) {
+        waiting_for_key = true;
+        waiting_reg = reg;
+    }
+
+    void Chip::complete_key_wait(uint8_t key) {
+        registers->at(waiting_reg) = key; // store the value of released key in Vx
+
+        waiting_for_key = false; // so run_frame resumes cycle()
+        waiting_reg = 0xFF; // default value
     }
 }
