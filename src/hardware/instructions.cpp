@@ -383,7 +383,22 @@ namespace Chip8 {
     }
 
     void Instructions::OP_DXYN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint16_t addr = chip8_ptr->index_reg;
+        uint8_t* sprite_ptr = chip8_ptr->memory->data() + addr;
 
+        uint8_t bytes = opcode & 0x000Fu;
+
+        uint8_t x = (opcode & 0x0F00u) >> 8u;
+        uint8_t y = (opcode & 0x00F0u) >> 4u;
+
+        uint8_t f = 0;
+
+        for (int i = 0; (i < bytes); i++) {  // add artificial upper bound at n bytes
+            draw(*sprite_ptr, x + i, y, chip8_ptr);
+            sprite_ptr++;
+        }
+
+        chip8_ptr->registers->at(0xF) = f;
     }
 
     void Instructions::OP_E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -461,5 +476,20 @@ namespace Chip8 {
         std::cout << "Performed null operation" << std::endl;
         return;
     }
+
+    void Instructions::draw(uint8_t sprite_byte, uint8_t x, uint8_t y, std::shared_ptr<Chip8::Chip>
+    chip8_ptr) {
+        for (int bit = 0; bit < 8; bit++) {
+            uint8_t sprite_pixel = sprite_byte & (0b10000000u >> bit); // mask out single bit
+            uint8_t* gfx_ptr = &chip8_ptr->gfx->at(x).at(y);
+
+            if (sprite_pixel && *gfx_ptr) {
+                chip8_ptr->registers->at(0xF) = 1;
+            }
+
+            *(gfx_ptr + bit) ^= sprite_pixel;
+        }
+    }
+
     
 } // Chip8

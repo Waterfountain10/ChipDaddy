@@ -61,7 +61,7 @@ namespace Chip8 {
     }
 
     void Chip::init_gfx() {
-        gfx = std::make_shared<std::array<uint8_t, 64 * 32>>();
+        gfx = std::make_shared<std::array<std::array<uint8_t, 32>, 64>>();
     }
 
     void Chip::init_random_generator() {
