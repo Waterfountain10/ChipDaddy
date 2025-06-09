@@ -23,7 +23,7 @@ namespace Chip8 {
     key_states(std::make_unique<std::set<uint8_t>>()),
     key_mapping(
         std::make_unique<std::map<uint8_t, uint8_t>>(
-            std::initializer_list<std::pair<const uint8_t,uint8_t>>{
+            std::initializer_list<std::pair<const uint8_t, uint8_t>>{
                 {  '1', 0x1 }, {  '2', 0x2 }, {  '3', 0x3 }, {  '4', 0xC },
                 { 'q', 0x4 }, { 'w', 0x5 }, { 'e', 0x6 }, { 'r', 0xD },
                 { 'a', 0x7 }, { 's', 0x8 }, { 'd', 0x9 }, { 'f', 0xE },
@@ -133,28 +133,32 @@ namespace Chip8 {
             switch (this->curr_key_input_event.type) {
             case SDL_KEYDOWN:
                 // Turn the Key on
-                this->add_key_state(this->curr_key_input_event.key.keysym);
+                if (this->curr_key_input_event.key.keysym.sym == SDLK_ESCAPE) {
+                    SDL_Quit();
+                    should_quit = true;
+                }
+                if (is_valid_key(this->curr_key_input_event.key.keysym)) {
+                    this->add_key_state(this->curr_key_input_event.key.keysym);
+                }
                 break;
 
             case SDL_KEYUP:
                 // If key is off then take the key off
-                uint8_t keycode = curr_key_input_event.key.keysym.sym;
-                auto iterator = key_mapping->find(keycode);
-                if (iterator != key_mapping->end()) {
-                    uint8_t key = iterator->second;
-                    if (chip8_->waiting_reg == 0xFF) break; // avoid seg fault
-                    chip8_->complete_key_wait(key);
+                if (is_valid_key(curr_key_input_event.key.keysym)) {
+                    if (!chip8_->waiting_reg == 0xFF) {
+                        chip8_->complete_key_wait(
+                            key_mapping->find(curr_key_input_event.key.keysym.sym)->second
+                        );
+                    }; // avoid seg fault
+                    this->remove_key_state(curr_key_input_event.key.keysym);
                 }
-
-                this->remove_key_state(this->curr_key_input_event.key.keysym);
-
                 break;
 
             case SDL_QUIT:
                 // Prompts SDL to close the window and program
                 SDL_Quit();
                 // Rest is dynamically handled
-                return 1;
+                should_quit = true;
                 break;
 
             default:
@@ -163,6 +167,11 @@ namespace Chip8 {
             }
         }
         return 0;
+    }
+
+    bool Platform::is_valid_key(SDL_Keysym keysym) {
+        std::map<uint8_t, uint8_t>::iterator mapping = key_mapping->find(keysym.sym);
+        return !(mapping == key_mapping->end());
     }
 
     int Platform::add_key_state(SDL_Keysym keysym) {
