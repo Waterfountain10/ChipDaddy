@@ -239,7 +239,6 @@ namespace Chip8 {
 
     void Platform::run_frame() {
         std::chrono::time_point frame_start_time = std::chrono::steady_clock::now();
-        int cycles_to_run = ipf_;
 
         // Run instructions per frame as specified;
         for (int i = 0; i < ipf_; ++i) {
@@ -266,12 +265,12 @@ namespace Chip8 {
         chip8_->decrement_timers();
 
         // Plays sound based on condition
-        // if (chip8_->sound_timer > 0 && !curr_audio_data.tone_on) {
-        //     play_sound();
-        // }
-        // else if (chip8_->sound_timer == 0 && curr_audio_data.tone_on) {
-        //     disable_sound();
-        // }
+        if (chip8_->sound_timer > 0 && !curr_audio_data.tone_on) {
+            play_sound();
+        }
+        else if (chip8_->sound_timer == 0 && curr_audio_data.tone_on) {
+            disable_sound();
+        }
 
         // Compute remaining time
         std::chrono::time_point<std::chrono::steady_clock> frame_end_time = std::chrono::steady_clock::now();

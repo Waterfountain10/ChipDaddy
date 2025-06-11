@@ -98,18 +98,26 @@ namespace Chip8 {
         return 0;
     }
 
+    /**
+     * Stores 5 bytes * 16 fonts = 80 bytes inside [0x050, 0x09F]
+     * @param start_address_hex std::string
+     * @return true bool
+     */
     bool Chip::load_fonts_in_memory(std::string start_address_hex) {
-        // Stores 5 bytes * 16 fonts = 80 bytes inside [0x050, 0x09F]
-        int start_address_int;
+        // Set start_address_int by parsing string
         std::stringstream ss;
         ss << std::hex << start_address_hex;
-        ss >> start_address_int;
-        if (start_address_int > 432) {
+        ss >> font_start_address;
+
+        if (font_start_address > 432) {
             std::cerr << "start_address is too high to fit in between 0x000 and 0x200";
             return false;
         }
+
+        std::cout << font_start_address << std::endl;
+
         for (int i = 0; i < 80; i++) {
-            (*this->memory)[start_address_int + i] = this->fonts[i];
+            (*this->memory)[font_start_address + i] = this->fonts[i];
         }
         return true;
     }

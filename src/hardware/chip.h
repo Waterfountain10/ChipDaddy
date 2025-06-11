@@ -38,6 +38,8 @@ namespace Chip8 {
         bool waiting_for_key;
         uint8_t waiting_reg;
 
+        uint16_t font_start_address;
+
         explicit Chip();
         ~Chip() = default;
         int init_counters();

@@ -469,12 +469,37 @@ namespace Chip8 {
     void Instructions::OP_FX1E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
     }
 
+    /**
+     * @brief LD F, Vx
+     *
+     * Set I = location of sprite for digit Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX29(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00) >> 8;
+        uint8_t v = chip8_ptr->registers->at(reg);
 
+        chip8_ptr->index_reg = chip8_ptr->font_start_address;
     }
 
+    /**
+     * @brief LD B, Vx
+     *
+     * Stores the BCD representation of Vx in memory locations I, I+1, and I+2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX33(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg = (opcode & 0x0F00) >> 8;
+        uint8_t v = chip8_ptr->registers->at(reg);
 
+        // Split using BCD (highest possible is 256)
+        chip8_ptr->memory->at(chip8_ptr->index_reg + 2) = v % 10;
+        v /= 10;
+        chip8_ptr->memory->at(chip8_ptr->index_reg + 1) = (v % 10);
+        v /= 10;
+        chip8_ptr->memory->at(chip8_ptr->index_reg) = v;
     }
 
     void Instructions::OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -495,7 +520,6 @@ namespace Chip8 {
 
     void Instructions::OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         std::cout << "Performed null operation" << std::endl;
-        return;
     }
 
     void Instructions::draw(uint8_t sprite_byte, uint8_t x, uint8_t y, std::shared_ptr<Chip8::Chip>
