@@ -14,7 +14,7 @@
 #include "instructions.h"
 
 namespace Chip8 {
-
+    constexpr std::string FONT_START_ADDRESS = "050";
     class Instructions; // avoid circular declarations
 
     class Chip : public std::enable_shared_from_this<Chip> {
@@ -46,7 +46,7 @@ namespace Chip8 {
         void init_gfx();
         void init_waiting();
 
-        bool load_fonts_in_memory(std::string start_address = "050");
+        bool load_fonts_in_memory(std::string start_address = FONT_START_ADDRESS);
         bool get_rom_loaded();
         int load_rom(std::ifstream *file_stream);
 
