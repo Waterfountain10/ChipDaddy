@@ -442,6 +442,7 @@ namespace Chip8 {
      * @brief LD Vx, K
      *
      * Wait for a key press, store the value of the key in Vx.
+     *
      * All execution stops until a key is pressed, then the value of that key is stored in Vx.
      *
      * @param chip8_ptr
@@ -452,6 +453,15 @@ namespace Chip8 {
         // value of key is stored in Vx at SDL_KEYUP inside Platform.cpp
     }
 
+    /**
+     * @brief LD DT, Vx
+     *
+     * Set delay timer = Vx.
+     *
+     * DT is set equal to the value of Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX15(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8u;
         uint8_t v = chip8_ptr->registers->at(reg);
@@ -459,6 +469,15 @@ namespace Chip8 {
         chip8_ptr->delay_timer = v;
     }
 
+    /**
+     * @brief LD ST, Vx
+     *
+     * Set sound timer = Vx.
+     *
+     * ST is set equal to the value of Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX18(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8u;
         uint8_t v = chip8_ptr->registers->at(reg);
@@ -466,7 +485,24 @@ namespace Chip8 {
         chip8_ptr->sound_timer = v;
     }
 
+    /**
+     * @brief ADD I, Vx
+     *
+     * Set I = I + Vx
+     *
+     * The values of I and Vx are added, and the results are stored in I.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX1E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+
+        uint8_t val_x = chip8_ptr->registers->at(reg_x);
+        uint8_t val_index = chip8_ptr->registers->at(chip8_ptr->index_reg);
+
+        uint16_t new_value = val_x + val_index;
+
+        chip8_ptr->registers->at(chip8_ptr->index_reg) = new_value;
     }
 
     /**
@@ -474,48 +510,89 @@ namespace Chip8 {
      *
      * Set I = location of sprite for digit Vx.
      *
+     * The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
+     *
      * @param chip8_ptr
      */
     void Instructions::OP_FX29(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        uint8_t reg = (opcode & 0x0F00) >> 8;
-        uint8_t v = chip8_ptr->registers->at(reg);
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t val_x = chip8_ptr->registers->at(reg_x); // this should be 4 bits max
 
-        chip8_ptr->index_reg = chip8_ptr->font_start_address;
+        chip8_ptr->registers->at(chip8_ptr->index_reg) =
+            std::stoul(Chip8::FONT_START_ADDRESS) + (val_x * 5); // 5 bytes per sprite
     }
 
     /**
      * @brief LD B, Vx
      *
-     * Stores the BCD representation of Vx in memory locations I, I+1, and I+2.
+     * Store BCD representation of Vx in memory locations I, I+1, and I+2.
+     *
+     * The interpreter takes the decimal value of Vx, and places
+     * - the hundreds digit in memory at location in I,
+     * - the tens digit at location I+1,
+     * - and the ones digit at location I+2.
      *
      * @param chip8_ptr
      */
     void Instructions::OP_FX33(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        uint8_t reg = (opcode & 0x0F00) >> 8;
-        uint8_t v = chip8_ptr->registers->at(reg);
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t val_x = chip8_ptr->registers->at(reg_x);
 
-        // Split using BCD (highest possible is 256)
-        chip8_ptr->memory->at(chip8_ptr->index_reg + 2) = v % 10;
-        v /= 10;
-        chip8_ptr->memory->at(chip8_ptr->index_reg + 1) = (v % 10);
-        v /= 10;
-        chip8_ptr->memory->at(chip8_ptr->index_reg) = v;
+        uint8_t hundreds = val_x / 100; // 152 / 100 -> 1
+        uint8_t tens = (val_x / 10) % 10; // 152 / 10 -> 15 -> mod 10 = 5
+        uint8_t ones = (val_x % 10); // 152 % 10 -> 2
+
+        chip8_ptr->memory->at(chip8_ptr->index_reg) = hundreds;
+        chip8_ptr->memory->at(chip8_ptr->index_reg + 1) = tens;
+        chip8_ptr->memory->at(chip8_ptr->index_reg + 2) = ones;
     }
 
+    /**
+     * @brief LD [I], Vx
+     *
+     * Store registers V0 through Vx in memory starting at location I.
+     *
+     * The interpreter copies the values of registers V0 through Vx into memory,
+     * starting at the address in I.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_FX55(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        uint8_t last_reg = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
 
         std::array<uint8_t, 16>::iterator reg_begin = chip8_ptr->registers->begin();
-        std::array<uint8_t, 16>::iterator reg_end = reg_begin + last_reg;
-        std::array<uint8_t, 4096>::iterator mem_start = chip8_ptr->memory->begin() +
-        chip8_ptr->index_reg;
+        std::array<uint8_t, 16>::iterator reg_end = reg_begin + reg_x + 1; // include Vx for index
 
-        std::copy(reg_begin, reg_end, mem_start);
+        std::array<uint8_t, 4096>::iterator mem_ptr = chip8_ptr->memory->begin() + chip8_ptr->index_reg;
 
+        if ((chip8_ptr->index_reg + reg_x) > chip8_ptr->memory->size()) {
+            throw std::out_of_range("Memory overflow in OP_FX55");
+        }
+        std::copy(reg_begin, reg_end, mem_ptr);
     }
 
+    /**
+     * @brief LD Vx, [I]
+     *
+     * Read registers V0 through Vx from memory starting at location I.
+     *
+     * The interpreter reads values from memory starting at location I
+     * into registers V0 through Vx.
+     *
+     *  @param chip8_ptr
+     */
     void Instructions::OP_FX65(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
 
+        std::array<uint8_t, 4096>::iterator mem_begin = chip8_ptr->memory->begin() + chip8_ptr->index_reg;
+        std::array<uint8_t, 4096>::iterator mem_end = mem_begin + reg_x + 1; // included Vx for index
+
+        std::array<uint8_t, 16>::iterator register_ptr = chip8_ptr->registers->begin(); // included Vx for index
+
+        if ((chip8_ptr->index_reg + reg_x) >= chip8_ptr->memory->size()) {
+            throw std::out_of_range("Memory overflow in OP_FX65");
+        }
+        std::copy(mem_begin, mem_end, register_ptr );
     }
 
     void Instructions::OP_NULL(std::shared_ptr<Chip8::Chip> chip8_ptr) {
