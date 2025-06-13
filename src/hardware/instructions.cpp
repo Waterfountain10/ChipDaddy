@@ -374,8 +374,20 @@ namespace Chip8 {
         chip8_ptr->index_reg = addr;
     }
 
+    /**
+     * @brief JP V0, addr
+     *
+     * Jump to location nnn + V0.
+     *
+     * The program counter is set to nnn plus the value of V0.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_BNNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint16_t location = (opcode & 0x0FFFu); // no need to shift because we keep the last byte
+        uint8_t reg_zero = chip8_ptr->registers->at(0);
 
+        chip8_ptr->program_ctr = location + reg_zero;
     }
 
     void Instructions::OP_CXNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
