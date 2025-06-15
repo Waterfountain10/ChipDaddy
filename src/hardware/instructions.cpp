@@ -85,15 +85,36 @@ namespace Chip8 {
         dispatch_table[0xF] = &Instructions::OP_F;
     }
 
-    // TODO: Add all the remaining instructions
+    // 0 - Ops
     void Instructions::OP_0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         (this->*zero_dispatch_table[(opcode & 0x000Fu)])(chip8_ptr);     // masks last bit and executes
     }
 
+    /**
+     * @brief CLS
+     *
+     * Clear the display.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_00E0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
+        for (std::size_t x = 0; x < 64; x++) {
+            for (std::size_t y = 0; y < 32; y++) {
+                (*chip8_ptr->gfx)[x][y] = 0;
+            }
+        }
     }
 
+    /**
+     * @brief RET
+     *
+     * Return from a subroutine.
+     *
+     * The interpreter sets the program counter to the address at the top of the stack,
+     * then subtracts 1 from the stack pointer.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_00EE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         chip8_ptr->stack_ptr--;
         chip8_ptr->program_ctr = chip8_ptr->stack->at(chip8_ptr->stack_ptr);
