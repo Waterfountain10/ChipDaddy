@@ -546,12 +546,32 @@ namespace Chip8 {
         (this->*e_dispatch_table[(opcode & 0x000Fu)])(chip8_ptr);
     }
 
+    /**
+     * @brief SKP Vx
+     *
+     * Skip next instruction if key with the value of Vx is pressed.
+     *
+     * Checks the keyboard, and if the key corresponding to the value of Vx
+     * is currently in the down position, PC is increased by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_EX9E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
+        // TODO : implement this
     }
 
+    /**
+     * @brief SKNP Vx
+     *
+     * Skip next instruction if key with the value of Vx is not pressed.
+     *
+     * Checks the keyboard, and if the key corresponding to the value of Vx
+     * is currently in the up position, PC is increased by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_EXA1(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-
+        // TODO : implement this
     }
 
     // F-Ops
