@@ -120,23 +120,67 @@ namespace Chip8 {
         chip8_ptr->program_ctr = chip8_ptr->stack->at(chip8_ptr->stack_ptr);
     }
 
+    /**
+     * @brief JP addr
+     *
+     * Jump to location nnn.
+     *
+     * The interpreter sets the program counter to nnn.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_1NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint16_t addr = opcode & 0x0FFF;
         chip8_ptr->program_ctr = addr;
     }
 
+    /**
+     * @brief CALL addr
+     *
+     * Call subroutine at nnn.
+     *
+     * The interpreter increments the stack pointer,
+     * then puts the current PC on the top of the stack. The PC is then set to nnn.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_2NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         chip8_ptr->stack->at(chip8_ptr->stack_ptr) = 1;
         chip8_ptr->stack_ptr++;
 
-        uint16_t addr = opcode & 0x0FFFu;
+        uint16_t addr = opcode & 0x0FFFu; // 4 + 4 + 4 = 12 bits so need a uint16
         chip8_ptr->program_ctr = addr;
     }
 
+    /**
+     * @brief SE Vx, byte
+     *
+     * Skip next instruction if Vx = kk.
+     *
+     * The interpreter compares register Vx to kk,
+     * and if they are equal, increments the program counter by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_3XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t byte = (opcode & 0x00FFu);
 
+        if (chip8_ptr->registers->at(reg_x) == byte) {
+            chip8_ptr->program_ctr += 2;
+        }
     }
 
+    /**
+     * @brief SNE Vx, byte
+     *
+     * Skip next instruction if Vx != kk.
+     *
+     * The interpreter compares register Vx to kk,
+     * and if they are NOT equal, increments the program counter by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_4XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8u;     // Masks third digit then shifts to keep
         uint8_t byte = (opcode & 0x00FFu);    // Masks bottom 8-bits
@@ -146,10 +190,34 @@ namespace Chip8 {
         }
     }
 
+    /**
+     * @brief SE Vx, Vy
+     *
+     * Skip next instruction if Vx = Vy.
+     *
+     * The interpreter compares register Vx to register Vy,
+     * and if they are equal, increments the program counter by 2.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_5XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
+        if (chip8_ptr->registers->at(reg_x) == chip8_ptr->registers->at(reg_y)) {
+            chip8_ptr->program_ctr += 2;
+        }
     }
 
+    /**
+     * @brief LD Vx, byte
+     *
+     * Set Vx = kk.
+     *
+     * The interpreter puts the value kk into register Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_6XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8u;
         uint8_t byte = opcode & 0x00FFu;
@@ -157,8 +225,22 @@ namespace Chip8 {
         chip8_ptr->registers->at(reg) = byte;
     }
 
+    /**
+     * @brief ADD Vx, byte
+     *
+     * Set Vx = Vx + kk.
+     *
+     * Adds the value kk to the value of register Vx,
+     * then stores the result in Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_7XNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
+        uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        uint8_t kk_byte = opcode & 0x00FFu;
 
+        uint8_t result = reg_x + kk_byte;
+        chip8_ptr->registers->at(reg_x) = result;
     }
 
     void Instructions::OP_8(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -411,6 +493,17 @@ namespace Chip8 {
         chip8_ptr->program_ctr = location + reg_zero;
     }
 
+    /**
+     * @brief RND Vx, byte
+     *
+     * Set Vx = random byte AND kk.
+     *
+     * The interpreter generates a random number from 0 to 255,
+     * which is then ANDed with the value kk.
+     * The results are stored in Vx.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_CXNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8;
         uint8_t byte = (opcode & 0x00FFu);
@@ -418,6 +511,18 @@ namespace Chip8 {
         chip8_ptr->registers->at(reg) = chip8_ptr->get_random_number() & byte;
     }
 
+    /**
+     * @brief DRW Vx, Vy, nibble
+     *
+     * Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+     *
+     * The interpreter reads n bytes from memory, starting at the address stored in I.
+     * These bytes are then displayed as sprites on screen at coordinates (Vx, Vy).
+     * Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display,
+     * it wraps around to the opposite side of the screen.
+     *
+     * @param chip8_ptr
+     */
     void Instructions::OP_DXYN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint16_t addr = chip8_ptr->index_reg;
         uint8_t* sprite_ptr = chip8_ptr->memory->data() + addr;
