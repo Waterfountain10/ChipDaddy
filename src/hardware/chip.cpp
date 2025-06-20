@@ -114,8 +114,6 @@ namespace Chip8 {
             return false;
         }
 
-        std::cout << font_start_address << std::endl;
-
         for (int i = 0; i < 80; i++) {
             (*this->memory)[font_start_address + i] = this->fonts[i];
         }

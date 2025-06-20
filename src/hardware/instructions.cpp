@@ -145,7 +145,7 @@ namespace Chip8 {
      * @param chip8_ptr
      */
     void Instructions::OP_2NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        chip8_ptr->stack->at(chip8_ptr->stack_ptr) = 1;
+        chip8_ptr->stack->at(chip8_ptr->stack_ptr) = chip8_ptr->program_ctr;
         chip8_ptr->stack_ptr++;
 
         uint16_t addr = opcode & 0x0FFFu; // 4 + 4 + 4 = 12 bits so need a uint16
@@ -328,7 +328,7 @@ namespace Chip8 {
         uint8_t value_y = chip8_ptr->registers->at(reg_y);
 
         uint8_t c = static_cast<uint8_t>(value_x ^ value_y);
-        chip8_ptr->registers->at(reg_x);
+        chip8_ptr->registers->at(reg_x) = c;
     }
 
     /**
@@ -413,7 +413,7 @@ namespace Chip8 {
      */
     void Instructions::OP_8XY7(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
-        uint8_t reg_y = (opcode & 0x00F0u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
         uint8_t value_x = chip8_ptr->registers->at(reg_x);
         uint8_t value_y = chip8_ptr->registers->at(reg_y);
@@ -455,7 +455,7 @@ namespace Chip8 {
      */
     void Instructions::OP_9XY0(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
-        uint8_t reg_y = (opcode & 0x00F0u) >> 8u;
+        uint8_t reg_y = (opcode & 0x00F0u) >> 4u;
 
         uint8_t value_x = chip8_ptr->registers->at(reg_x);
         uint8_t value_y = chip8_ptr->registers->at(reg_y);
@@ -654,13 +654,9 @@ namespace Chip8 {
      */
     void Instructions::OP_FX1E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
-
         uint8_t val_x = chip8_ptr->registers->at(reg_x);
-        uint8_t val_index = chip8_ptr->registers->at(chip8_ptr->index_reg);
 
-        uint16_t new_value = val_x + val_index;
-
-        chip8_ptr->registers->at(chip8_ptr->index_reg) = new_value;
+        chip8_ptr->index_reg += val_x;
     }
 
     /**
@@ -676,7 +672,7 @@ namespace Chip8 {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
         uint8_t val_x = chip8_ptr->registers->at(reg_x); // this should be 4 bits max
 
-        chip8_ptr->registers->at(chip8_ptr->index_reg) =
+        chip8_ptr->index_reg =
             std::stoul(Chip8::FONT_START_ADDRESS) + (val_x * 5); // 5 bytes per sprite
     }
 
@@ -761,13 +757,19 @@ namespace Chip8 {
     chip8_ptr) {
         for (int bit = 0; bit < 8; bit++) {
             uint8_t sprite_pixel = sprite_byte & (0b10000000u >> bit); // mask out single bit
-            uint8_t* gfx_ptr = &chip8_ptr->gfx->at(x).at(y);
+            std::cout << "x: " << static_cast<int>(x) << std::endl;
+            std::cout << "y: " << static_cast<int>(y) << std::endl;
 
-            if (sprite_pixel && *gfx_ptr) {
+            uint8_t wrapped_x = (x + bit) % 64;
+            uint8_t wrapped_y = y % 32;
+
+            uint8_t& pixel = chip8_ptr->gfx->at(wrapped_x).at(wrapped_y);
+
+            if (sprite_pixel && pixel) {
                 chip8_ptr->registers->at(0xF) = 1;
             }
 
-            *(gfx_ptr + bit) ^= sprite_pixel;
+            pixel ^= sprite_pixel;
         }
     }
 

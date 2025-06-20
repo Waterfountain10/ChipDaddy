@@ -145,7 +145,7 @@ namespace Chip8 {
             case SDL_KEYUP:
                 // If key is off then take the key off
                 if (is_valid_key(curr_key_input_event.key.keysym)) {
-                    if (!chip8_->waiting_reg == 0xFF) {
+                    if (chip8_->waiting_reg != 0xFF) {
                         chip8_->complete_key_wait(
                             key_mapping->find(curr_key_input_event.key.keysym.sym)->second
                         );
@@ -265,10 +265,10 @@ namespace Chip8 {
         chip8_->decrement_timers();
 
         // Plays sound based on condition
-        if (chip8_->sound_timer > 0 && !curr_audio_data.tone_on) {
+        if (chip8_->sound_timer > 0 && !curr_audio_data->tone_on) {
             play_sound();
         }
-        else if (chip8_->sound_timer == 0 && curr_audio_data.tone_on) {
+        else if (chip8_->sound_timer == 0 && curr_audio_data->tone_on) {
             disable_sound();
         }
 
