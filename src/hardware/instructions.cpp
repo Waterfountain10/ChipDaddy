@@ -557,7 +557,14 @@ namespace Chip8 {
      * @param chip8_ptr
      */
     void Instructions::OP_EX9E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        // TODO : implement this
+        // uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
+        // uint8_t key_x = chip8_ptr->registers->at(reg_x);
+        //
+        // if (chip8_ptr->(key_x)) {
+        //     chip8_ptr->program_ctr += 2;
+        // }
+        // todo: by albert
+
     }
 
     /**
@@ -608,7 +615,7 @@ namespace Chip8 {
     void Instructions::OP_FX0A(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
         chip8_ptr->set_waiting_register(reg_x);
-        // value of key is stored in Vx at SDL_KEYUP inside Platform.cpp
+        // we store the value of key inside Platform.cpp at SDL_KEYUP
     }
 
     /**

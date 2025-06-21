@@ -187,6 +187,21 @@ namespace Chip8 {
         return key_states->erase(key);
     }
 
+    // TODO : REMOVE IF ALBERT DECIDES TO DO E-CODES DIFFERENTLY
+    /**
+     *
+     * Used for E-Codes for skipping if key pressed or not.
+     * Comparing chip 8 key (virtual keyboard)
+     * NOT the SDL event key type (real keyboard)
+     *
+     * @param key
+     * `
+     * @return True if chip8 key is pressed
+     */
+    // bool Platform::is_key_pressed(uint8_t key) const {
+    //     return key_states->count(key) > 0;
+    // }
+
 
     /**
      * @brief SDL audio callback that generates a tone or silence based on AudioData state.

@@ -50,6 +50,7 @@ public:
     bool is_valid_key(SDL_Keysym keysym);
     int add_key_state(SDL_Keysym keysym);
     int remove_key_state(SDL_Keysym keysym);
+    //bool is_key_pressed(uint8_t key) const;
 
     static void audio_callback(void *userdata, Uint8 *stream, int len);
     void play_sound();
