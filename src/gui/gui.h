@@ -19,7 +19,7 @@ class Gui {
         void clear();
         void present_idle();
         bool input_rom_path(std::string rom_path);
-        void draw_pixel(int col, int row, int scale, bool on); // on, paint white, off is nothing
+        void draw_pixel(int col, int row /* int scale */, bool on); // on, paint white, off is nothing
 
         int update_texture(uint8_t* gfx_ptr);
 

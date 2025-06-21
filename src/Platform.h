@@ -30,7 +30,6 @@ public:
     const std::shared_ptr<Chip> chip8_; // actual hardware
     const std::shared_ptr<Gui> gui_; // gui layer
     bool should_quit{false};
-    const int scale = 10;
     const int center_row = 16; // halfway (32/2)
     const int center_col = 32;
 

@@ -35,7 +35,7 @@ namespace Chip8 {
         if (!ren)
             throw std::runtime_error("SDL_CreateRenderer failed");
 
-        SDL_RenderSetLogicalSize(this->ren, width, height);
+        SDL_RenderSetLogicalSize(this->ren, 64, 32); // fixed 64, 32 to allow responsive scaling
 
         // intro display (for rom selection screen)
         if (is_intro) {
@@ -115,19 +115,14 @@ namespace Chip8 {
      *
      * @param col    The horizontal coordinate of the pixel (0–63).
      * @param row    The vertical coordinate of the pixel (0–31).
-     * @param scale  The size, in screen‐pixels, of one CHIP-8 pixel.
      * @param on     If true, draw the pixel (white); if false, do nothing (pixel remains off).
     */
-    void Gui::draw_pixel(int col, int row, int scale, bool on)
+    void Gui::draw_pixel(int col, int row, bool on)
     {
         if (!on) return;
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 
-        SDL_Rect r;
-        r.x = col * scale;
-        r.y = row * scale;
-        r.w = scale;
-        r.h = scale;
+        SDL_Rect r{col, row, 1, 1}; // draws a 1x1 logical pixel in canvas always
         SDL_RenderFillRect(ren, &r);
     }
 

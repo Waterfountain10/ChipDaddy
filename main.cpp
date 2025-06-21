@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     chip8_hardware->init_gfx();
 
     // Create a game GUI and the platform
-    std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",1000,1000, false);
+    std::shared_ptr<Chip8::Gui> game_gui = std::make_shared<Chip8::Gui>("GAME",2000,2000, false);
     std::unique_ptr<Chip8::Platform> chip8_platform =
         std::make_unique<Chip8::Platform>(chip8_hardware, game_gui, ipf);
 

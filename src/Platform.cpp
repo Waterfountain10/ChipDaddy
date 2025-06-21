@@ -268,7 +268,7 @@ namespace Chip8 {
             for (int x = 0; x < 64; x++) {
                 for (int y = 0; y < 32; y++) {
                     if (chip8_->gfx->at(x).at(y)) // if y exists then, pixel is valid
-                        gui_->draw_pixel(x,y,scale,true);
+                        gui_->draw_pixel(x,y,true);
                 }
             }
         gui_->present_idle();
