@@ -262,16 +262,14 @@ namespace Chip8 {
                 chip8_->cycle();
             }
         }
-        // Boiler plate code for RENDERING GFX
-        // TODO: render the actual memory instead of hardcoded pixels
+
+        // DRAW PIXEL in gui as a rectangle (or square to be exact)
         gui_->clear();
-            // draw a vertical line
-            for (int r = center_row - 5; r <= center_row + 5; ++r) {
-                gui_->draw_pixel(center_col, r, scale, true);
-            }
-            // draw a horizontal line
-            for (int c = center_col - 5; c <= center_col + 5; ++c) {
-                gui_->draw_pixel(c, center_row, scale, true);
+            for (int x = 0; x < 64; x++) {
+                for (int y = 0; y < 32; y++) {
+                    if (chip8_->gfx->at(x).at(y)) // if y exists then, pixel is valid
+                        gui_->draw_pixel(x,y,scale,true);
+                }
             }
         gui_->present_idle();
 

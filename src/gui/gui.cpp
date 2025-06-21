@@ -109,6 +109,15 @@ namespace Chip8 {
         SDL_RenderPresent(ren);
     }
 
+    /**
+     * Draws a single CHIP-8 “pixel” as a filled rectangle on the screen.
+     *
+     *
+     * @param col    The horizontal coordinate of the pixel (0–63).
+     * @param row    The vertical coordinate of the pixel (0–31).
+     * @param scale  The size, in screen‐pixels, of one CHIP-8 pixel.
+     * @param on     If true, draw the pixel (white); if false, do nothing (pixel remains off).
+    */
     void Gui::draw_pixel(int col, int row, int scale, bool on)
     {
         if (!on) return;

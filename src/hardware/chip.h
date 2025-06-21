@@ -58,9 +58,9 @@ namespace Chip8 {
 
         int cycle();    // main loop
 
-        std::shared_ptr<std::array<std::array<uint8_t, 32>, 64>> get_gfx() const {
-            return gfx;
-        }
+        // std::shared_ptr<std::array<std::array<uint8_t, 32>, 64>> get_gfx() const {
+        //     return gfx;
+        // }
 
         uint8_t get_random_number();
 
