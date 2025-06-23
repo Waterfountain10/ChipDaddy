@@ -10,6 +10,7 @@
 #include <random>
 #include <memory>
 #include <vector>
+#include <set>
 
 #include "instructions.h"
 
@@ -26,6 +27,8 @@ namespace Chip8 {
         const std::unique_ptr<std::array<uint16_t, 16>> stack;     //uint16_t stack[16];
         std::shared_ptr<std::array<std::array<uint8_t, 32>, 64>> gfx; //uint8_t gfx[64][32];
         std::array<uint8_t, 80> fonts;
+
+        const std::unique_ptr<std::set<uint8_t>> key_states; // state of keys
 
         std::shared_ptr<Instructions> instr_dispatcher; // lifetime is managed by the hardware
         // Do not reference platform as it is abstraction layer
@@ -63,6 +66,10 @@ namespace Chip8 {
         // }
 
         uint8_t get_random_number();
+
+        void add_key_state(uint8_t key);
+        int remove_key_state(uint8_t key);
+        bool is_key_pressed(uint8_t key);
 
         bool is_waiting_for_key();
 

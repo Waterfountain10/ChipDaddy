@@ -20,7 +20,6 @@ namespace Chip8 {
     Platform::Platform(std::shared_ptr<Chip8::Chip> chip8_instance, std::shared_ptr<Gui>
     gui_instance, unsigned ipf) :  // initialize list and kep mappings
     sdl_subsystems_(std::make_unique<std::vector<uint32_t>>()),
-    key_states(std::make_unique<std::set<uint8_t>>()),
     key_mapping(
         std::make_unique<std::map<uint8_t, uint8_t>>(
             std::initializer_list<std::pair<const uint8_t, uint8_t>>{
@@ -121,15 +120,14 @@ namespace Chip8 {
     int Platform::read_input()  // main key reading loop call method
     {
         // Printing current key states for debugging
-        if (!this->key_states->empty()) {
-            for (int v : *this->key_states)            // elements come out sorted, no duplicates
+        if (!chip8_->key_states->empty()) {
+            for (int v : *chip8_->key_states)            // elements come out sorted, no duplicates
                 std::cout << v << ' ';
             std::cout << '\n';
         }
         while (SDL_PollEvent(&(this->curr_key_input_event)))
         {
             // read poll event only once
-            uint8_t key;
             switch (this->curr_key_input_event.type) {
             case SDL_KEYDOWN:
                 // Turn the Key on
@@ -177,31 +175,15 @@ namespace Chip8 {
     int Platform::add_key_state(SDL_Keysym keysym) {
         // add to key_states
         uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
-        key_states->insert(key);
+        chip8_->add_key_state(key);
         return 0;
     }
 
     int Platform::remove_key_state(SDL_Keysym keysym) {
         // remove from key_states
         uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
-        return key_states->erase(key);
+        return chip8_->remove_key_state(key);
     }
-
-    // TODO : REMOVE IF ALBERT DECIDES TO DO E-CODES DIFFERENTLY
-    /**
-     *
-     * Used for E-Codes for skipping if key pressed or not.
-     * Comparing chip 8 key (virtual keyboard)
-     * NOT the SDL event key type (real keyboard)
-     *
-     * @param key
-     * `
-     * @return True if chip8 key is pressed
-     */
-    // bool Platform::is_key_pressed(uint8_t key) const {
-    //     return key_states->count(key) > 0;
-    // }
-
 
     /**
      * @brief SDL audio callback that generates a tone or silence based on AudioData state.
@@ -272,8 +254,6 @@ namespace Chip8 {
                 }
             }
         gui_->present_idle();
-
-        // TODO: Plays sound using SDL if sound_timer > 0
 
         chip8_->decrement_timers();
 

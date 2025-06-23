@@ -16,6 +16,7 @@ namespace Chip8 {
     registers(std::make_unique<std::array<uint8_t, 16>>()),
     memory(std::make_unique<std::array<uint8_t, 4096>>()),
     stack(std::make_unique<std::array<uint16_t, 16>>()),
+    key_states(std::make_unique<std::set<uint8_t>>()),
     fonts {{
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -162,6 +163,31 @@ namespace Chip8 {
 
     uint8_t Chip::get_random_number() {
         return uniform_dist(random_engine);
+    }
+
+    void Chip::add_key_state(uint8_t key) {
+        if (key <= 15) {    // uint8_t always >= 0
+            key_states->insert(key);
+        }
+    }
+
+    int Chip::remove_key_state(uint8_t key) {
+        return key_states->erase(key);
+    }
+
+    /**
+     * @brief Checks if a key is pressed.
+     *
+     * Used for E-Codes for skipping if key pressed or not.
+     * Comparing chip 8 key (virtual keyboard)
+     * NOT the SDL event key type (real keyboard)
+     *
+     * @param key
+     * `
+     * @return True if chip8 key is pressed
+     */
+    bool Chip::is_key_pressed(uint8_t key) {
+        return key_states->count(key) > 0;
     }
 
     bool Chip::is_waiting_for_key() {

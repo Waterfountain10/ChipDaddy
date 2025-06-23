@@ -767,8 +767,8 @@ namespace Chip8 {
     chip8_ptr) {
         for (int bit = 0; bit < 8; bit++) {
             uint8_t sprite_pixel = sprite_byte & (0b10000000u >> bit); // mask out single bit
-            std::cout << "x: " << static_cast<int>(x) << std::endl;
-            std::cout << "y: " << static_cast<int>(y) << std::endl;
+            // std::cout << "x: " << static_cast<int>(x) << std::endl;
+            // std::cout << "y: " << static_cast<int>(y) << std::endl;
 
             uint8_t wrapped_x = (x + bit) % 64;
             uint8_t wrapped_y = y % 32;
