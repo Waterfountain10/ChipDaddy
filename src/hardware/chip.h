@@ -14,7 +14,7 @@
 #include "instructions.h"
 
 namespace Chip8 {
-    constexpr std::string FONT_START_ADDRESS = "050";
+    const std::string FONT_START_ADDRESS = "050";
     class Instructions; // avoid circular declarations
 
     class Chip : public std::enable_shared_from_this<Chip> {
