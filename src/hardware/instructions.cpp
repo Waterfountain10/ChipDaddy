@@ -22,6 +22,7 @@ namespace Chip8 {
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
+            std::cout << opcode << std::endl;
             (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific
             // instruction
             chip8_ptr.reset();
@@ -117,7 +118,7 @@ namespace Chip8 {
      */
     void Instructions::OP_00EE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         chip8_ptr->stack_ptr--;
-        chip8_ptr->program_ctr = chip8_ptr->stack->at(chip8_ptr->stack_ptr);
+        chip8_ptr->program_ctr = (chip8_ptr->stack->at(chip8_ptr->stack_ptr)) - 2;
     }
 
     /**
@@ -131,7 +132,7 @@ namespace Chip8 {
      */
     void Instructions::OP_1NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint16_t addr = opcode & 0x0FFF;
-        chip8_ptr->program_ctr = addr;
+        chip8_ptr->program_ctr = addr - 2;
     }
 
     /**
@@ -149,7 +150,7 @@ namespace Chip8 {
         chip8_ptr->stack_ptr++;
 
         uint16_t addr = opcode & 0x0FFFu; // 4 + 4 + 4 = 12 bits so need a uint16
-        chip8_ptr->program_ctr = addr;
+        chip8_ptr->program_ctr = addr - 2;
     }
 
     /**
@@ -490,7 +491,7 @@ namespace Chip8 {
         uint16_t location = (opcode & 0x0FFFu); // no need to shift because we keep the last byte
         uint8_t reg_zero = chip8_ptr->registers->at(0);
 
-        chip8_ptr->program_ctr = location + reg_zero;
+        chip8_ptr->program_ctr = location + reg_zero - 2;
     }
 
     /**
