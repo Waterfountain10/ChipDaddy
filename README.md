@@ -2,6 +2,10 @@
 
 Learning C++ by building a CHIP-8 emulator from scratch. No external libraries besides SDL2. Trying out a few ideas along the way.
 
+### zero demo (ROM taken from [here](https://github.com/kripod/chip8-roms/blob/c723a9ed1205a215c5b1e45e994eb54acc243c9e/demos/Zero%20Demo%20%5BzeroZshadow%2C%202007%5D.ch8))
+
+![me](https://github.com/Waterfountain10/chip-8-emulator/blob/main/src/public/zero-demo.gif)
+
 ## what it does
 
 Loads and runs basic CHIP-8 ROMs (like Pong, Breakout, etc). Handles input, rendering, timers, and sound.
