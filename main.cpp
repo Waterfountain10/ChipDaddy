@@ -49,17 +49,14 @@ int main(int argc, char *argv[])
                     throw std::runtime_error("<rom_path> file size is negative");
                 if (!__checkType(ipf))
                     throw std::runtime_error("<ipf> must be a digit");
-                if (ipf < 1 || ipf > 20)
-                    throw std::runtime_error("<ipf> must be a digit between 1 and 20 inclusively");
+                if (ipf < 1 || ipf > 30)
+                    throw std::runtime_error("<ipf> must be a digit between 1 and 30 inclusively");
                 break;
             }
             case 1: {
                 // gui mode
                 rom_path = "placeholder_text"; // REMOVE LATER
                 ipf = 10; // placeholder ipf   // REMOVE LATER
-
-                int demo_w = 621;
-                int demo_h = 457;
 
                 std::unique_ptr<Chip8::Gui> intro_gui = std::make_unique<Chip8::Gui>
                 ("SELECT_YOUR_ROM",621,
@@ -77,7 +74,7 @@ int main(int argc, char *argv[])
                 break;
             }
             default: {
-                throw std::runtime_error("Incorrect number of arguments. Correct template is: ./chip-8-emulator <ROM_file> <ipf>");
+                throw std::runtime_error("Incorrect number of arguments. Correct usage: ./chip-8-emulator <ROM_file> <ipf>");
             }
         }
         std::cout << "-------------------------------------------------------" << std::endl;
@@ -107,11 +104,11 @@ int main(int argc, char *argv[])
     chip8_platform->add_subsystem(SDL_INIT_VIDEO);
     chip8_platform->add_subsystem(SDL_INIT_EVENTS);
 
-    std::cout << ">>> Added SDL Video and Events." << std::endl;
+    std::cout << ">>> Added SDL Video and Events Subsystems" << std::endl;
     chip8_platform->add_subsystem(SDL_INIT_AUDIO);
 
     chip8_platform->init_sdl();
-    std::cout << ">>> Initialized SDL Video and Events." << std::endl;
+    std::cout << ">>> Initialized Video and Events." << std::endl;
 
     // Load the Fonts
     chip8_hardware->load_fonts_in_memory();
@@ -125,14 +122,14 @@ int main(int argc, char *argv[])
     rom_file.close();   // Closes the file after loading
 
     // START THE GAME
-    std::cout << ">>> game started...\n" << std::endl;
+    std::cout << ">>> CHIP-8 Initializing...\n" << std::endl;
 
     bool running = true;
     while (running && chip8_platform->check_valid()) {
         chip8_platform->run_frame();
     }
 
-    std::cout << "...game ended\n" << std::endl;
+    std::cout << "...Terminated CHIP-8\n" << std::endl;
 
     // End of all SDL subsystems + destruct layer
     return 0;

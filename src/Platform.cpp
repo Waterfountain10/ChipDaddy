@@ -118,12 +118,6 @@ namespace Chip8 {
 
     int Platform::read_input()  // main key reading loop call method
     {
-        // Printing current key states for debugging
-        if (!chip8_->key_states->empty()) {
-            for (int v : *chip8_->key_states)            // elements come out sorted, no duplicates
-                std::cout << v << ' ';
-            std::cout << '\n';
-        }
         while (SDL_PollEvent(&(this->curr_key_input_event)))
         {
             // read poll event only once
@@ -203,7 +197,6 @@ namespace Chip8 {
         for (int i = 0; i < samples; i++) {
             if (audio_data->tone_on) {
                 // Generate a sine wave at the current phase
-                std::cout << buf[i] << std::endl;
                 double value = std::sin(audio_data->phase);
                 buf[i] = static_cast<Sint16>(audio_data->amplitude * value);
 
@@ -212,7 +205,6 @@ namespace Chip8 {
                 if (audio_data->phase >= 2.0 * M_PI) {
                     audio_data->phase -= 2.0 * M_PI;
                 }
-                std::cout << audio_data->phase << std::endl;
             } else {
                 // Output silence when the sound is off
                 buf[i] = 0;

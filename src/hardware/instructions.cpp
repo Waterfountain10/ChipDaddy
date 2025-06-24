@@ -23,7 +23,7 @@ namespace Chip8 {
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
-            std::cout << chip8_ptr->program_ctr << std::format(": {:#06x}\n", opcode);
+            // std::cout << std::format("{:#06x}", chip8_ptr->program_ctr) << std::format(": {:#06x}\n", opcode);
             (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific
             // instruction
             chip8_ptr.reset();
@@ -119,7 +119,7 @@ namespace Chip8 {
      */
     void Instructions::OP_00EE(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         chip8_ptr->stack_ptr--;
-        chip8_ptr->program_ctr = (chip8_ptr->stack->at(chip8_ptr->stack_ptr)) - 2;
+        chip8_ptr->program_ctr = (chip8_ptr->stack->at(chip8_ptr->stack_ptr));
     }
 
     /**
@@ -132,9 +132,8 @@ namespace Chip8 {
      * @param chip8_ptr
      */
     void Instructions::OP_1NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
-        uint16_t addr = opcode & 0x0FFF;
+        uint16_t addr = opcode & 0x0FFFu;
         chip8_ptr->program_ctr = addr - 2;
-        std::cout << std::format("J: {:#06x}\n", addr);
     }
 
     /**
@@ -509,9 +508,9 @@ namespace Chip8 {
      */
     void Instructions::OP_CXNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint8_t reg = (opcode & 0x0F00u) >> 8;
-        uint8_t byte = (opcode & 0x00FFu);
-
-        chip8_ptr->registers->at(reg) = chip8_ptr->get_random_number() & byte;
+        uint8_t NN = (opcode & 0x00FFu);
+        uint16_t random = chip8_ptr->get_random_number() & NN;
+        chip8_ptr->registers->at(reg) = random;
     }
 
     /**
@@ -687,7 +686,7 @@ namespace Chip8 {
         uint8_t val_x = chip8_ptr->registers->at(reg_x); // this should be 4 bits max
 
         chip8_ptr->index_reg =
-            std::stoul(Chip8::FONT_START_ADDRESS) + (val_x * 5); // 5 bytes per sprite
+            chip8_ptr->font_start_address + (val_x * 5); // 5 bytes per sprite
     }
 
     /**
@@ -771,8 +770,6 @@ namespace Chip8 {
     chip8_ptr) {
         for (int bit = 0; bit < 8; bit++) {
             uint8_t sprite_pixel = (sprite_byte >> (7 - bit)) & 0x01u;; // mask out single bit
-            // std::cout << "x: " << static_cast<int>(x) << std::endl;
-            // std::cout << "y: " << static_cast<int>(y) << std::endl;
 
             uint8_t wrapped_x = (x + bit) % 64;
             uint8_t wrapped_y = y % 32;
