@@ -1,7 +1,3 @@
-Absolutely — here’s a stripped-down, minimal, chill version of your README that feels more personal and not AI-generated:
-
----
-
 # chip-8-emulator
 
 Learning C++ by building a CHIP-8 emulator from scratch. No external libraries besides SDL2. Trying out a few ideas along the way.
