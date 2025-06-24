@@ -1,29 +1,43 @@
 # chip-8-emulator
 
-Learning C++ by building a CHIP-8 emulator from scratch. No external libraries besides SDL2. Trying out a few ideas along the way.
+A CHIP-8 emulator/interpreter built using C++. Lightweight and simple. Uses the COSMAC VIP specifications along with modern tweaks. Trying out a few optimizations along the way.
 
-### zero demo (ROM taken from [here](https://github.com/kripod/chip8-roms/blob/c723a9ed1205a215c5b1e45e994eb54acc243c9e/demos/Zero%20Demo%20%5BzeroZshadow%2C%202007%5D.ch8))
+### demo (ROM taken from [here](https://github.com/kripod/chip8-roms/blob/c723a9ed1205a215c5b1e45e994eb54acc243c9e/demos/Zero%20Demo%20%5BzeroZshadow%2C%202007%5D.ch8))
 
 ![me](https://github.com/Waterfountain10/chip-8-emulator/blob/main/src/public/zero-demo.gif)
 
 ## what it does
 
-Loads and runs basic CHIP-8 ROMs (like Pong, Breakout, etc). Handles input, rendering, timers, and sound.
+Loads and runs basic, classic CHIP-8 ROMs (like Pong, Breakout, Space Invaders, etc). This allows you to build and play your favorite classic games. The emulator handles input, rendering, timers, and sound.
+
+> **_NOTE:_**  Customizing the `ipf` value allows you to change how fast the ROM runs. Different programs have different preferred values. For a full guide on tuning this value, refer to [this guide].(https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing)
+
+## how to use 
+
+To use this emulator, you have _two options._
+
+1. Download one of the **release binaries** we have built for each platform (`Windows`, `Linux`, `MacOS`). Refer to our release links here to download. After your download, you can use CLI command `./chip_8_emulator <ROM_path> <ipf>` to run the emulator.
+
+2. Clone this repository and _build the binaries yourself._ Refer to guide below.
 
 ## how to build
 
+### Build from this repository:
+
 ```bash
-git clone https://github.com/your-username/chip-8-emulator.git
+git clone https://github.com/Waterfountain10/chip-8-emulator.git
 cd chip-8-emulator
 mkdir build && cd build
 cmake ..
 make
-./chip_8_emulator ../chip8-roms/pong.ch8 10
+
+# Run your favorite ROM using the format: ./chip_8_emulator <ROM_path> <ipf>
+./chip_8_emulator ../chip8-roms/pong.ch8 12
 ```
 
 ## what’s different
 
-Some personal tweaks:
+Some personal tweaks and optimizations:
 
 * computed go-to table for mapping instructions in O(alpha) rather than switch-case's O(logn)
 * custom instruction-per-frame (IPF) control (make your game _speedy_ if you want)
