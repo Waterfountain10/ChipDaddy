@@ -32,14 +32,13 @@ namespace Chip8 {
         this->win = SDL_CreateWindow(name.c_str(),
                                         SDL_WINDOWPOS_CENTERED,
                                         SDL_WINDOWPOS_CENTERED,
-                                        width,height,
+                                        width * 2,height * 2,
                                         SDL_WINDOW_RESIZABLE);
 
         // unopened gui exception handled in main.cpp
         if (!win)
             throw std::runtime_error("gui could not be opened!");
 
-        //SDL_Surface* gui_display_surface = SDL_GetWindowSurface(win); // SDL allocates this pointer so no need to free
         this->ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
         if (!ren)
             throw std::runtime_error("SDL_CreateRenderer failed");
