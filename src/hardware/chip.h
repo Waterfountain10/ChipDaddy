@@ -8,8 +8,6 @@
 #include <array>
 #include <cstdint>
 #include <random>
-#include <memory>
-#include <vector>
 #include <set>
 
 #include "instructions.h"

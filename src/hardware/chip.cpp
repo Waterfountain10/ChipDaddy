@@ -6,13 +6,17 @@
 
 #include <iostream>
 #include <fstream>
-#include <format>
-#include <memory>
 #include <sstream>
 
 // This is all the implementation for the chip-8 hardware
 namespace Chip8 {
-    Chip::Chip() :    // initialize list
+    /**
+     * @brief Constructs the CHIP-8 emulator hardware state.
+     *
+     * Initializes registers, memory, stack, key state tracking, and loads font data.
+     * Sets up internal counters, timers, random generator, and key-wait state.
+     */
+    Chip::Chip() :
     registers(std::make_unique<std::array<uint8_t, 16>>()),
     memory(std::make_unique<std::array<uint8_t, 4096>>()),
     stack(std::make_unique<std::array<uint16_t, 16>>()),
@@ -34,7 +38,7 @@ namespace Chip8 {
         0xE0, 0x90, 0x90, 0x90, 0xE0, // D
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80, // F
-    }}  // DI from this
+    }}
     {
         init_counters();
         init_timers(0, 0);    // use default argument values 0, 0
@@ -45,6 +49,11 @@ namespace Chip8 {
 
     // INITIALIZERS
 
+    /**
+     * @brief Initializes the index register, program counter, and stack pointer.
+     *
+     * @return Always returns 0.
+     */
     int Chip::init_counters() {
         this->index_reg = 0x000; // aka i (stores memory address by rom)
         this->program_ctr = 0x200; // program line counter
@@ -53,6 +62,13 @@ namespace Chip8 {
         return 0;
     }
 
+    /**
+     * @brief Initializes delay and sound timers.
+     *
+     * @param delay_time Initial value for delay timer (default 0).
+     * @param sound_time Initial value for sound timer (default 0).
+     * @return Always returns 0.
+     */
     int Chip::init_timers(uint8_t delay_time = 0, uint8_t sound_time = 0) {
         this->delay_timer = delay_time;
         this->sound_timer = sound_time;
@@ -60,27 +76,53 @@ namespace Chip8 {
         return 0;
     }
 
+    /**
+     * @brief Initializes the opcode instruction dispatcher.
+     *
+     * Creates an Instructions instance bound to this Chip.
+     */
     void Chip::init_instr_dispatcher() {
         instr_dispatcher = std::make_shared<Instructions>(shared_from_this());
     }
 
+    /**
+     * @brief Initializes the graphics buffer.
+     *
+     * Allocates a 64x32 array for pixel state.
+     */
     void Chip::init_gfx() {
         gfx = std::make_shared<std::array<std::array<uint8_t, 32>, 64>>();
     }
 
+    /**
+     * @brief Initializes the random number generator.
+     *
+     * Configures uniform distribution over 0-255 and default engine.
+     */
     void Chip::init_random_generator() {
         uniform_dist = std::uniform_int_distribution<uint8_t>{ 0, 255u };
         random_engine = std::default_random_engine{};
     }
 
+    /**
+     * @brief Resets the key-waiting state.
+     *
+     * waiting_for_key set to false and waiting_reg reset.
+     */
     void Chip::init_waiting() {
         this->waiting_for_key = false;
         this->waiting_reg = 0xFF;
     }
 
+    // HARDWARE FUNCTIONS
 
-    // FUNCTIONS
-
+    /**
+     * @brief Loads a CHIP-8 ROM from file into memory starting at 0x200.
+     *
+     * @param file_stream Pointer to an open ifstream for the ROM file.
+     * @throws std::runtime_error if file read fails.
+     * @return 0 on success.
+     */
     int Chip::load_rom(std::ifstream *file_stream) {
         std::streamsize file_size = file_stream->tellg();
         std::vector<char> buffer(file_size);
@@ -100,9 +142,12 @@ namespace Chip8 {
     }
 
     /**
-     * Stores 5 bytes * 16 fonts = 80 bytes inside [0x050, 0x09F]
-     * @param start_address_hex std::string
-     * @return true bool
+     * @brief Loads font sprite data into memory.
+     *
+     * Each font character is 5 bytes, total 80 bytes written at font_start_address.
+     *
+     * @param start_address_hex Hex string specifying where to load fonts.
+     * @return True on successful load; false if address invalid.
      */
     bool Chip::load_fonts_in_memory(std::string start_address_hex) {
         // Set start_address_int by parsing string
@@ -121,14 +166,29 @@ namespace Chip8 {
         return true;
     }
 
+    /**
+     * @brief Checks if a ROM has been successfully loaded.
+     *
+     * @return True if ROM loaded, false otherwise.
+     */
     bool Chip::get_rom_loaded() {
         return rom_loaded;
     }
 
+    /**
+     * @brief Sets the ROM loaded status.
+     *
+     * @param status Boolean flag indicating ROM load state.
+     */
     void Chip::set_rom_loaded(bool status) {
         rom_loaded = status;
     }
 
+    /**
+     * @brief Decrements the delay and sound timers if above zero.
+     *
+     * @return 0 on success; -1 if timers underflow.
+     */
     int Chip::decrement_timers() {
         if (delay_timer < 0 || sound_timer < 0) return -1;
         if (delay_timer > 0) delay_timer--;
@@ -136,10 +196,21 @@ namespace Chip8 {
         return 0;
     }
 
+    /**
+     * @brief Sets the sound timer to a specific value.
+     *
+     * @param time New sound timer value.
+     */
     void Chip::set_sound_timer(uint8_t time) {
         sound_timer = time;
     }
 
+    /**
+     * @brief Performs one CPU cycle: fetch, decode, execute.
+     *
+     * @throws std::out_of_range if program counter exceeds memory.
+     * @return 0 on successful cycle.
+     */
     int Chip::cycle() {
         // validation
         if (program_ctr + 1 >= memory->size()) {
@@ -161,6 +232,11 @@ namespace Chip8 {
         return 0;
     }
 
+    /**
+     * @brief Generates a random 8-bit value using uniform distribution.
+     *
+     * @return A random uint8_t in range [0,255].
+     */
     uint8_t Chip::get_random_number() {
         return uniform_dist(random_engine);
     }
@@ -199,6 +275,13 @@ namespace Chip8 {
         waiting_reg = reg;
     }
 
+    /**
+     * @brief Completes a key wait by storing the pressed key in Vx.
+     *
+     * Releases waiting state and writes key value.
+     *
+     * @param key Index of the key that was pressed.
+     */
     void Chip::complete_key_wait(uint8_t key) {
         registers->at(waiting_reg) = key; // store the value of released key in Vx
 

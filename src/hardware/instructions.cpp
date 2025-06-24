@@ -5,9 +5,8 @@
 #include "instructions.h"
 
 #include <chrono>
-#include <format>
+#include <iostream>
 #include <map>
-#include <SDL_events.h>
 #include <SDL_timer.h>
 
 namespace Chip8 {
@@ -23,9 +22,7 @@ namespace Chip8 {
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
-            // std::cout << std::format("{:#06x}", chip8_ptr->program_ctr) << std::format(": {:#06x}\n", opcode);
-            (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific
-            // instruction
+            (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific instruction
             chip8_ptr.reset();
         }
         return 0;

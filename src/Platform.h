@@ -6,10 +6,9 @@
 #define PLATFORM_H
 
 #include <chrono>
-#include <memory>
 #include <vector>
-#include <set>
 #include <map>
+
 #include <SDL_audio.h>
 #include <SDL_events.h>
 

@@ -6,7 +6,6 @@
 #define INSTRUCTIONS_H
 #include <array>
 #include <cstdint>
-#include <iostream>
 
 #include "chip.h"
 

@@ -4,13 +4,10 @@
 
 #include "Platform.h"
 
-#include <algorithm>
 #include <format>
 #include <iostream>
 #include <thread>
-#include <memory>
 #include <map>
-#include <set>
 
 #include <SDL.h>
 

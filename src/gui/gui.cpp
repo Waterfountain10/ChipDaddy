@@ -5,16 +5,25 @@
 #include "gui.h"
 
 #include <iostream>
-#include <type_traits>
 
 #include <SDL_events.h>
 #include <SDL_video.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_timer.h>
 
 namespace Chip8 {
-    // CONSTRUCTOR
+    /**
+     * @brief Constructs the GUI with a window, renderer, and palette.
+     *
+     * Initializes SDL2 window and renderer, sets logical size to 64x32 for CHIP-8,
+     * configures the background color based on intro flag, creates a paletted surface,
+     * and prepares the initial render.
+     *
+     * @param name Title of the SDL window.
+     * @param w Width of the window in pixels.
+     * @param h Height of the window in pixels.
+     * @param is_intro If true, sets up the intro selection screen background color.
+     * @throws std::runtime_error if the SDL window or renderer cannot be created.
+     */
     Gui::Gui(const std::string name, int w, int h, bool is_intro) {
         width = w;
         height = h;
@@ -80,6 +89,14 @@ namespace Chip8 {
         SDL_RenderPresent(ren);
     }
 
+    /**
+     * @brief Initializes the color palette for the display (black and white).
+     *
+     * Allocates an array of two SDL_Color values and sets index 0 to black
+     * and index 1 to white for CHIP-8's monochrome display.
+     *
+     * @return Pointer to the dynamically allocated SDL_Color array.
+     */
     SDL_Color* Gui::init_colors() {
         colors = static_cast<SDL_Color*>(malloc(sizeof(SDL_Color) * 2));
 
@@ -91,7 +108,11 @@ namespace Chip8 {
         return colors;
     }
 
-    // DESTRUCTOR
+    /**
+     * @brief Destructor for the GUI, cleans up SDL resources and allocated memory.
+     *
+     * Destroys the SDL texture, renderer, and window, and frees the palette colors.
+     */
     Gui::~Gui() {
         if (screen_texture) SDL_DestroyTexture(screen_texture);
         if (ren) SDL_DestroyRenderer(ren);
@@ -100,11 +121,21 @@ namespace Chip8 {
         ren = nullptr; win = nullptr; screen_texture = nullptr; screen_rect = nullptr;
     }
 
+    /**
+     * @brief Clears the renderer with a default background color.
+     *
+     * Sets the draw color to a dark grey and clears the current rendering target.
+     */
     void Gui::clear() {
         SDL_SetRenderDrawColor(ren, 20, 20, 20, 255);
         SDL_RenderClear(ren);
     }
 
+    /**
+     * @brief Presents the current rendered frame to the display without clearing.
+     *
+     * Useful for idle or static frames where only presenting is needed.
+     */
     void Gui::present_idle() {
         SDL_RenderPresent(ren);
     }
@@ -116,7 +147,7 @@ namespace Chip8 {
      * @param col    The horizontal coordinate of the pixel (0–63).
      * @param row    The vertical coordinate of the pixel (0–31).
      * @param on     If true, draw the pixel (white); if false, do nothing (pixel remains off).
-    */
+     */
     void Gui::draw_pixel(int col, int row, bool on)
     {
         if (!on) return;
@@ -126,6 +157,15 @@ namespace Chip8 {
         SDL_RenderFillRect(ren, &r);
     }
 
+    /**
+     * @brief Updates the screen texture from the graphics buffer and renders it.
+     *
+     * Copies the provided 8-bit graphics buffer into the SDL texture, then
+     * renders the texture to the window.
+     *
+     * @param gfx_ptr Pointer to the graphics buffer (uint8_t array) sized width * height.
+     * @return The result code from SDL_RenderCopy (0 on success, negative on failure).
+     */
     int Gui::update_texture(uint8_t* gfx_ptr) {
         SDL_UpdateTexture(screen_texture, nullptr, gfx_ptr, width * sizeof(uint8_t));
         return SDL_RenderCopy(ren, screen_texture, NULL, screen_rect.get());
