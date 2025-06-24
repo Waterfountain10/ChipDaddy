@@ -50,8 +50,7 @@ namespace Chip8 {
         for (uint32_t subsystem : *(this->sdl_subsystems_)) {
             SDL_QuitSubSystem(subsystem);
         }
-        SDL_Quit();
-        // TODO: Call any cleanup function from the hardware and gui layer
+        SDL_Quit(); // Gui has proper destructor ~Gui() and Chip is smart pointers = safe destruction
     }
 
     int Platform::init_sdl(void)
@@ -174,14 +173,14 @@ namespace Chip8 {
 
     int Platform::add_key_state(SDL_Keysym keysym) {
         // add to key_states
-        uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
+        uint8_t key = this->key_mapping->at(keysym.sym);
         chip8_->add_key_state(key);
         return 0;
     }
 
     int Platform::remove_key_state(SDL_Keysym keysym) {
         // remove from key_states
-        uint8_t key = this->key_mapping->at(keysym.sym);    // TODO: Add validation
+        uint8_t key = this->key_mapping->at(keysym.sym);
         return chip8_->remove_key_state(key);
     }
 

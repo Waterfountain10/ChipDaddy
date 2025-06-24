@@ -32,7 +32,7 @@ namespace Chip8 {
     }
 
     // private
-    void Instructions::init_dispatch_table() {  // TODO: Potential optimization -> Make Hash Map
+    void Instructions::init_dispatch_table() {
     // for quick access instead
         zero_dispatch_table = std::array<Handler, ZERO_OPS>{};
         zero_dispatch_table.fill(&Instructions::OP_NULL);
