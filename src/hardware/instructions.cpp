@@ -5,6 +5,7 @@
 #include "instructions.h"
 
 #include <chrono>
+#include <format>
 #include <map>
 #include <SDL_events.h>
 #include <SDL_timer.h>
@@ -22,7 +23,7 @@ namespace Chip8 {
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
-            std::cout << opcode << std::endl;
+            std::cout << chip8_ptr->program_ctr << std::format(": {:#06x}\n", opcode);
             (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific
             // instruction
             chip8_ptr.reset();
@@ -133,6 +134,7 @@ namespace Chip8 {
     void Instructions::OP_1NNN(std::shared_ptr<Chip8::Chip> chip8_ptr) {
         uint16_t addr = opcode & 0x0FFF;
         chip8_ptr->program_ctr = addr - 2;
+        std::cout << std::format("J: {:#06x}\n", addr);
     }
 
     /**
@@ -240,7 +242,7 @@ namespace Chip8 {
         uint8_t reg_x = (opcode & 0x0F00u) >> 8u;
         uint8_t kk_byte = opcode & 0x00FFu;
 
-        uint8_t result = reg_x + kk_byte;
+        uint8_t result = chip8_ptr->registers->at(reg_x) + kk_byte;
         chip8_ptr->registers->at(reg_x) = result;
     }
 
@@ -377,7 +379,7 @@ namespace Chip8 {
         chip8_ptr->registers->at(0xF) = 0;
         if (value_x > value_y) chip8_ptr->registers->at(0xF) = 1;
 
-        uint16_t full_diff = value_x - value_y;
+        uint16_t full_diff = std::abs(value_x - value_y);
         chip8_ptr->registers->at(reg_x) = (full_diff & 0x00FF); // 8 lowest bits
     }
 
@@ -519,7 +521,8 @@ namespace Chip8 {
      *
      * The interpreter reads n bytes from memory, starting at the address stored in I.
      * These bytes are then displayed as sprites on screen at coordinates (Vx, Vy).
-     * Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display,
+     * Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1,
+     * otherwise it is set to 0. If the sprite is positioned outside the coordinates of the display,
      * it wraps around to the opposite side of the screen.
      *
      * @param chip8_ptr
@@ -533,14 +536,14 @@ namespace Chip8 {
         uint8_t x = (opcode & 0x0F00u) >> 8u;
         uint8_t y = (opcode & 0x00F0u) >> 4u;
 
-        uint8_t f = 0;
+        uint8_t vx = chip8_ptr->registers->at(x);
+        uint8_t vy = chip8_ptr->registers->at(y);
 
         for (int i = 0; (i < bytes); i++) {  // add artificial upper bound at n bytes
-            draw(*sprite_ptr, x + i, y, chip8_ptr);
+            draw(*sprite_ptr, vx, vy + i, chip8_ptr);
             sprite_ptr++;
         }
 
-        chip8_ptr->registers->at(0xF) = f;
     }
 
     void Instructions::OP_E(std::shared_ptr<Chip8::Chip> chip8_ptr) {
@@ -767,7 +770,7 @@ namespace Chip8 {
     void Instructions::draw(uint8_t sprite_byte, uint8_t x, uint8_t y, std::shared_ptr<Chip8::Chip>
     chip8_ptr) {
         for (int bit = 0; bit < 8; bit++) {
-            uint8_t sprite_pixel = sprite_byte & (0b10000000u >> bit); // mask out single bit
+            uint8_t sprite_pixel = (sprite_byte >> (7 - bit)) & 0x01u;; // mask out single bit
             // std::cout << "x: " << static_cast<int>(x) << std::endl;
             // std::cout << "y: " << static_cast<int>(y) << std::endl;
 
@@ -777,9 +780,9 @@ namespace Chip8 {
             uint8_t& pixel = chip8_ptr->gfx->at(wrapped_x).at(wrapped_y);
 
             if (sprite_pixel && pixel) {
-                chip8_ptr->registers->at(0xF) = 1;
+                chip8_ptr->registers->at(0xF) = 1;  // sets collision to 1
             }
-
+            // fix this line
             pixel ^= sprite_pixel;
         }
     }

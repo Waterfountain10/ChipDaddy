@@ -243,6 +243,7 @@ namespace Chip8 {
             if (!chip8_->is_waiting_for_key()) { // skip cycle if waiting for a key
                 chip8_->cycle();
             }
+
         }
 
         // DRAW PIXEL in gui as a rectangle (or square to be exact)
@@ -272,9 +273,7 @@ namespace Chip8 {
         std::chrono::microseconds time_to_wait = cycle_period - elapsed;
 
         // Sleep until time is up
-        if (time_to_wait > std::chrono::microseconds::zero()) {
-            std::this_thread::sleep_for(time_to_wait);
-        }
+        std::this_thread::sleep_for(time_to_wait);
     }
 
 } // Chip8
