@@ -2,9 +2,10 @@
 
 A CHIP-8 emulator/interpreter built using C++. Lightweight and simple. Uses the COSMAC VIP specifications along with modern tweaks. Trying out a few optimizations along the way.
 
-### demo (ROM taken from [here](https://github.com/kripod/chip8-roms/blob/c723a9ed1205a215c5b1e45e994eb54acc243c9e/demos/Zero%20Demo%20%5BzeroZshadow%2C%202007%5D.ch8))
+### demo (ROM taken from [here](https://github.com/kripod/chip8-roms/tree/c723a9ed1205a215c5b1e45e994eb54acc243c9e))
 
-![me](https://github.com/Waterfountain10/chip-8-emulator/blob/main/src/public/zero-demo.gif)
+<img align="left" src="https://github.com/Waterfountain10/chip-8-emulator/blob/main/src/public/pong.gif" width="48%">
+<img align="right" src="https://github.com/Waterfountain10/chip-8-emulator/blob/main/src/public/space-invaders.gif" width="48%">
 
 ## what it does
 
