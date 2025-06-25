@@ -1,7 +1,3 @@
-//
-// Created by albert on 5/16/25.
-//
-
 #include "chip.h"
 
 #include <iostream>

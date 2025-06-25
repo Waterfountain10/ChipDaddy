@@ -1,7 +1,3 @@
-//
-// Created by William Lafond on 2025-05-18.
-//
-
 #ifndef GUI_H
 #define GUI_H
 

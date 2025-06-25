@@ -1,7 +1,3 @@
-//
-// Created by albert on 5/16/25.
-//
-
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 #include <array>

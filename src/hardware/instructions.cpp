@@ -1,7 +1,3 @@
-//
-// Created by albert on 5/16/25.
-//
-
 #include "instructions.h"
 
 #include <chrono>
@@ -22,7 +18,7 @@ namespace Chip8 {
         opcode = p_opcode;
         // Lock weak_ptr and operate using weak_ptr
         if (auto chip8_ptr = chip8_.lock()) {
-            (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific instruction
+            (this->*dispatch_table[(opcode & 0xF000u) >> 12u])(chip8_ptr); // executes specific insYtruction
             chip8_ptr.reset();
         }
         return 0;
@@ -375,7 +371,7 @@ namespace Chip8 {
         chip8_ptr->registers->at(0xF) = 0;
         if (value_x > value_y) chip8_ptr->registers->at(0xF) = 1;
 
-        uint16_t full_diff = std::abs(value_x - value_y);
+        uint16_t full_diff = value_x - value_y;
         chip8_ptr->registers->at(reg_x) = (full_diff & 0x00FF); // 8 lowest bits
     }
 

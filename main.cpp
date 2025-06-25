@@ -2,10 +2,10 @@
 #include <fstream>
 #include <format>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+
 #include <SDL2/SDL_timer.h>
 #include "src/hardware/chip.h"
-#include <boost/type_index.hpp>
+
 #include <type_traits>
 
 #include "src/Platform.h"
