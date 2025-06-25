@@ -22,6 +22,17 @@ To use this emulator, you have _two options._
 
 ## how to build
 
+Any C/C++ compiler should work fine with support of `C++20` or above.
+
+Libraries
+- `SDL2`
+- `SDL2_image`
+
+```bash
+# Example: Ubuntu/Debian
+sudo apt-get install libsdl2-2.0-0
+```
+
 ### Build from this repository:
 
 ```bash
