@@ -11,7 +11,7 @@ A CHIP-8 emulator/interpreter built using C++. Lightweight and simple. Uses the 
 
 Loads and runs basic, classic CHIP-8 ROMs (like Pong, Breakout, Space Invaders, etc). This allows you to build and play your favorite classic games. The emulator handles input, rendering, timers, and sound.
 
-> **_NOTE:_**  Customizing the `ipf` value allows you to change how fast the ROM runs. Different programs have different preferred values. For a full guide on tuning this value, refer to [this guide].(https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing)
+> **_NOTE:_**  Customizing the `ipf` value allows you to change how fast the ROM runs. Different programs have different preferred values. For a full guide on tuning this value, refer to [this guide](https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#timing).
 
 ## how to use 
 
