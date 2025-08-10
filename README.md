@@ -1,4 +1,4 @@
-# ChipDaddy, the start of the Daddy Emulator Series
+# ChipDaddy, the first of the *Daddy Series* (retro game emulators)
 
 A CHIP-8 emulator/interpreter built using C++. Lightweight and simple. Uses the COSMAC VIP specifications along with modern tweaks. Trying out a few optimizations along the way.
 
