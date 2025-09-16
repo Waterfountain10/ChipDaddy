@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <format>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
-#include <SDL2/SDL_timer.h>
+#include <SDL_timer.h>
 #include "src/hardware/chip.h"
 
 #include <type_traits>

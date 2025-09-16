@@ -4,7 +4,7 @@
 
 #include <SDL_events.h>
 #include <SDL_video.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace Chip8 {
     /**
