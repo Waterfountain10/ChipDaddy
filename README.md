@@ -60,6 +60,11 @@ Some personal tweaks and optimizations:
 * some debug-friendly logging for draw calls and memory
 * flexible architecture split between platform / chip / gui
 
+*NEW OPTIMIZATION (_latest update January 27th, 2026_)* 
+*  experimental **threaded dispatch (computed goto)** to reduce call/return overhead in the hot interpreter loop
+* instead of the last indirect function jump table
+
+
 ## why
 
 Mostly to get more comfortable with C++, memory management, and SDL. 
