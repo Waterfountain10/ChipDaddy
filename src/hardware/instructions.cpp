@@ -24,6 +24,96 @@ namespace Chip8 {
         return 0;
     }
 
+    // NEW TRUE THREADED interpretation (to be cross-checked and verified later_)
+    int Instructions::interpret_opcode_threaded(uint16_t p_opcode) {
+        #if !defined(__GNUC__) && !defined(__clang__)
+            // Fallback if computed goto not supported
+            return interpret_opcode(p_opcode);
+        #else
+            opcode = p_opcode;
+            if (const auto chip8_ptr = chip8_.lock()) {
+                // Dispatch table of labels (top nibble only)
+                static void* dispatch[] = {
+                    &&OP_0, &&OP_1, &&OP_2, &&OP_3,
+                    &&OP_4, &&OP_5, &&OP_6, &&OP_7,
+                    &&OP_8, &&OP_9, &&OP_A, &&OP_B,
+                    &&OP_C, &&OP_D, &&OP_E, &&OP_F
+                };
+                goto *dispatch[(opcode & 0xF000u) >> 12u];
+
+                OP_0:
+                    OP_0(chip8_ptr);
+                goto END;
+
+                OP_1:
+                    OP_1NNN(chip8_ptr);
+                goto END;
+
+                OP_2:
+                    OP_2NNN(chip8_ptr);
+                goto END;
+
+                OP_3:
+                    OP_3XNN(chip8_ptr);
+                goto END;
+
+                OP_4:
+                    OP_4XNN(chip8_ptr);
+                goto END;
+
+                OP_5:
+                    OP_5XY0(chip8_ptr);
+                goto END;
+
+                OP_6:
+                    OP_6XNN(chip8_ptr);
+                goto END;
+
+                OP_7:
+                    OP_7XNN(chip8_ptr);
+                goto END;
+
+                OP_8:
+                    OP_8(chip8_ptr);   // still does sub-dispatch
+                goto END;
+
+                OP_9:
+                    OP_9XY0(chip8_ptr);
+                goto END;
+
+                OP_A:
+                    OP_ANNN(chip8_ptr);
+                goto END;
+
+                OP_B:
+                    OP_BNNN(chip8_ptr);
+                goto END;
+
+                OP_C:
+                    OP_CXNN(chip8_ptr);
+                goto END;
+
+                OP_D:
+                    OP_DXYN(chip8_ptr);
+                goto END;
+
+                OP_E:
+                    OP_E(chip8_ptr);
+                goto END;
+
+                OP_F:
+                    OP_F(chip8_ptr);
+                goto END;
+
+                END:
+                    return 0;
+            }
+
+            return 0;
+        #endif
+    }
+
+
     // private
     void Instructions::init_dispatch_table() {
     // for quick access instead

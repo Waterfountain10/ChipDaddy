@@ -23,6 +23,7 @@ cmake_install.cmake
 
 # IDE-related files
 *cmake-build*/
+*cmake-test*/
 
 # Packaging-related files
 *.tar.gz

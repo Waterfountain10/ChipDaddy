@@ -14,6 +14,8 @@ add_executable(chip_8_emulator
         src/Platform.h
         src/gui/gui.cpp
         src/gui/gui.h
+        src/hardware/bench_dispatch.cpp
+        src/hardware/bench_dispatch.h
 )
 
 find_package(SDL2 CONFIG REQUIRED)
@@ -25,3 +27,14 @@ target_link_libraries(chip_8_emulator PRIVATE
         SDL2_image::SDL2_image
         SDL2_mixer::SDL2_mixer
 )
+
+# for BenchMarking Dispatch table Configuration:
+add_executable(dispatch_benchmark
+        src//hardware/bench_dispatch.cpp
+        src/hardware/instructions.cpp
+        src/hardware/chip.cpp
+)
+
+target_include_directories(dispatch_benchmark PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(dispatch_benchmark PRIVATE ${SDL2_LIBRARIES})
+
