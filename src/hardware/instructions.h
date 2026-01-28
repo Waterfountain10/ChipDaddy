@@ -18,8 +18,16 @@ namespace Chip8 {
         explicit Instructions(std::shared_ptr<Chip> chip8_instance);    // constructor
         ~Instructions() = default;
 
-        int interpret_opcode(uint16_t opcode);   // Computed goto table
+        int interpret_opcode(uint16_t opcode);          // Computed goto table
+        int interpret_opcode_threaded(uint16_t opcode); // THREADED goto table (slightly more optimal than above)
+        int interpret(uint16_t opcode) {                // generalized goto
+            #ifdef CHIP_8_THREADED_DISPATCH
+                return interpret_opcode_threaded(opcode);
+            #else
+                return interpret_opcode(opcode);
+            #endif
 
+            }
         using Handler = void (Instructions::*)(std::shared_ptr<Chip8::Chip>);   // define function
         // ptr type
 
