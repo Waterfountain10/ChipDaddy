@@ -60,13 +60,14 @@ Some personal tweaks and optimizations:
 * some debug-friendly logging for draw calls and memory
 * flexible architecture split between platform / chip / gui
 
-*NEW OPTIMIZATION (_latest update January 27th, 2026_)* 
+## !!!! *NEW OPTIMIZATION (_latest update January 27th, 2026_)* !!!!
 *  experimental **threaded dispatch (computed goto)** to reduce call/return overhead in the hot interpreter loop
 * instead of the last indirect function jump table
 
-  ### Old Indirect Dispatch Table (benchmarked only the instructions on _Star_)
+### Old Indirect Dispatch Table (benchmarked only the instructions on _Star_)
 <img width="737" height="111" alt="Screenshot 2026-01-28 at 2 25 08 PM" src="https://github.com/user-attachments/assets/63de4887-a74a-4390-b19c-1151d4e31b99" />
-  ### TRUE Threaded Dispatch (benchmarked only the instructions on _Star_)
+
+### TRUE Threaded Dispatch (benchmarked only the instructions on _Star_)
 <img width="895" height="111" alt="Screenshot 2026-01-28 at 2 30 54 PM" src="https://github.com/user-attachments/assets/3dbfccd1-8a6e-47b7-b36a-632897e47167" />
 
 
